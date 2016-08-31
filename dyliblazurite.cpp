@@ -598,10 +598,11 @@ namespace lazurite
 	{
 		int result;
 		uint16_t tmp_size;
+		int i;
 		SUBGHZ_MAC_PARAM mac;
-		while(1) {
+		for (i=0;i<16;i++) {
 			result = read(fp,&tmp_size,2);
-			if(result == 0){
+			if(result <= 0){
 				*size=0;
 				break;
 			}
@@ -611,7 +612,8 @@ namespace lazurite
 			if ((*tx_addr == linkedAddr) || (linkedAddr == 0xFFFF))
 			{
 				*size = mac.payload_len;
-				mac.payload[*size]=0;
+				result = mac.payload_len;
+				mac.payload[result]=0;
 				memcpy(payload,mac.payload,*size);
 				break;
 			}
@@ -620,7 +622,7 @@ namespace lazurite
 				continue;
 			}
 		}
-		return *size;
+		return result;
 	}
 	/******************************************************************************/
 	/*! @brief get Receiving time
@@ -898,7 +900,7 @@ namespace lazurite
 	  @return         0=success <br> 0 < fail
 	  @exception      none
 	 ******************************************************************************/
-	extern "C" int lazurite_setCcaWait(uint16_t ccawait)
+	extern "C" int lazurite_setCcaWait(uint8_t ccawait)
 	{
 		int result;
 		int errcode=0;

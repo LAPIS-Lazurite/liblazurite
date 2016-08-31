@@ -1,3 +1,4 @@
+All: LIB tx raw rx link doc
 
 LIB:
 	g++ -shared -fPIC -o liblazurite.so dyliblazurite.cpp
@@ -19,5 +20,8 @@ rx:
 link:
 	g++ -I./ -o test_link test_link.cpp -L/usr/lib -llazurite
 
+doc:
+	doxygen
+
 clean:
-	-rm *.o *.a *.so test_tx test_rx test_raw
+	-rm -r *.o *.a *.so test_tx test_rx test_raw test_link html latex doxygen_sqlite3.db

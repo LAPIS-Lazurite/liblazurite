@@ -351,7 +351,7 @@ namespace lazurite
 	  @return         0=success <br> 0 < fail
 	  @exception      none
 	 ******************************************************************************/
-	int lazurite_setCcaWait(uint16_t ccawait);
+	int lazurite_setCcaWait(uint8_t ccawait);
 
 #ifdef __cplusplus
 	};
