@@ -269,7 +269,7 @@ namespace lazurite
 		int errcode = 0;
 
 		// open device driver
-		system("sudo insmod /home/pi/develop/LazDriver/lazdriver.ko");
+		system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko");
 		system("sudo chmod 777 /dev/lzgw");
 		fp = open("/dev/lzgw",O_RDWR),errcode--;
 		if(fp<0) return -1;
