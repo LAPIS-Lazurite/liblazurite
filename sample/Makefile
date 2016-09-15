@@ -1,0 +1,16 @@
+All: tx raw rx link 
+
+tx:
+	g++ -I./ -o sample_tx sample_tx.cpp -L/usr/lib -llazurite
+
+raw:
+	g++ -I./ -o sample_rx_raw sample_rx_raw.cpp -L/usr/lib -llazurite
+
+rx:
+	g++ -I./ -o sample_rx_payload sample_rx_payload.cpp -L/usr/lib -llazurite
+
+link:
+	g++ -I./ -o sample_rx_link sample_rx_link.cpp -L/usr/lib -llazurite
+
+clean:
+	rm sample_tx sample_rx_raw sample_rx_payload sample_rx_link

@@ -30,7 +30,7 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
-#include "liblazurite.h"
+#include "../lib/liblazurite.h"
 #include <time.h>
 
 

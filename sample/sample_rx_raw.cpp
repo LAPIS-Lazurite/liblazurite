@@ -1,28 +1,28 @@
 /*!
-  @file test_link.cpp
-  @brief about test_link <br>
-  sample code to read payload from only specific address.
+  @file test_rx.cpp
+  @brief about test_raw <br>
+  sample code to read raw data that is received.
 
   @subsection how to use <br>
 
-  test_link ch panid linkedAddress <br>
+  paramete can be ommited.
   
   (ex)
   @code
-  test_link 36 0xabcd 0x1007
+  test_raw 36 0xabcd 100 20
+  test_raw 36 0xabcd
   @endcode
 
-  then print payload from linked address.
   when push Ctrl+C, process is quited.
   */
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <signal.h>
-#include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include "liblazurite.h" 
+#include "../lib/liblazurite.h" 
 
 using namespace lazurite;
 bool bStop;
@@ -54,7 +54,6 @@ int main(int argc, char **argv)
 	uint8_t rate=100;
 	uint8_t pwr=20;
 	uint16_t panid=0xabcd;
-	uint16_t linkedAddr=0xffff;
 
 	// set Signal Trap
 	setSignal(SIGINT);
@@ -74,13 +73,10 @@ int main(int argc, char **argv)
 		panid = strtol(argv[2],&en,0);
 	}
 	if(argc>3) {
-		linkedAddr = strtol(argv[3],&en,0);
+		rate = strtol(argv[3],&en,0);
 	}
 	if(argc>4) {
-		rate = strtol(argv[4],&en,0);
-	}
-	if(argc>5) {
-		pwr = strtol(argv[5],&en,0);
+		pwr = strtol(argv[4],&en,0);
 	}
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) {
@@ -93,23 +89,18 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	result = lazurite_link(linkedAddr);
-	if(result < 0) {
-		printf("lazurite_link fail = %d\n",result);
-		return EXIT_FAILURE;
-	}
-
 	while(bStop == false)
 	{
-		char data[256];
 		uint16_t size;
 		uint8_t rssi;
-		memset(data,0,sizeof(data));
-		result = lazurite_readLink(data,&size);
-		if(result >0 ) {
-			lazurite_getRxTime(&rxTime.tv_sec,&rxTime.tv_nsec);
-			rssi = lazurite_getRxRssi();
-			printf("%d-%d\t%d\t%s\n",rxTime.tv_sec,rxTime.tv_nsec,rssi,data);
+		SUBGHZ_MAC mac;
+		char raw[256];
+		memset(raw,0,sizeof(raw));
+		result = lazurite_read(raw,&size);
+		if(result > 0 ) {
+			result = lazurite_decMac(&mac,raw,size);
+			printf("%04x\t%04x\t%04x\t%04x\t", mac.rx_panid,*((uint16_t*) mac.rx_addr), mac.tx_panid,*((uint16_t*)mac.tx_addr));
+			printf("%s\n", raw+mac.payload_offset);
 		}
 		usleep(100000);
 	}

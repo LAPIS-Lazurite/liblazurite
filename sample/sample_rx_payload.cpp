@@ -23,7 +23,7 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
-#include "liblazurite.h" 
+#include "../lib/liblazurite.h" 
 
 using namespace lazurite;
 bool bStop;
