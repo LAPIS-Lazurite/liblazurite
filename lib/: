@@ -272,9 +272,9 @@ namespace lazurite
 			rssi,
 			mac.tx_panid,
 			mac.tx_addr,
-			raw[mac.payload_offset]
+			mac.payload
 			);
-		*size = strnlen(stream,512);
+		*size = strnlen(outStream,512)l
 		result = *size;
 
 		return result;
