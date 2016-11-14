@@ -212,6 +212,7 @@ namespace lazurite
 				break;
 		}
 		//tx_addr
+		memset(mac->tx_addr,0xffff,sizeof(mac->tx_addr));
 		switch(mac->mac_header.alignment.tx_addr_type)
 		{
 			case 1:
