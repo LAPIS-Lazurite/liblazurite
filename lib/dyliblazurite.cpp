@@ -423,6 +423,47 @@ namespace lazurite
 	/******************************************************************************/
 	/*! @brief send data
 	  @param[in]     rxpanid	panid of receiver
+	  @param[in]     dst_be     8x8bit address pointer for 64bit MAC address(big endian)<br>
+	  rxpanid & txaddr = 0xffff = broadcast <br>
+	  others = unicast <br>
+	  @param[in]     payload start poiter of data to be sent
+	  @param[in]     length length of payload
+	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+	  @exception none
+	 ******************************************************************************/
+	extern "C" int lazurite_send64(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)
+	{
+		int result;
+		int errcode=-1;
+		union {
+			uint8_t a8[8];
+			uint16_t a16[4];
+		} uaddr;
+
+		if(!dst_be) return errcode;
+		for(int i=0;i<7;i++) {
+			uaddr.a8[7-i] = dst_be[i];
+		}
+
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_PANID,panid), errcode--;
+		if(result != panid) return errcode;
+
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR0,uaddr.a16[0]), errcode--;
+		if(result != uaddr.a16[0]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR1,uaddr.a16[1]), errcode--;
+		if(result != uaddr.a16[1]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR2,uaddr.a16[2]), errcode--;
+		if(result != uaddr.a16[2]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR3,uaddr.a16[3]), errcode--;
+		if(result != uaddr.a16[3]) return errcode;
+
+		result = write(fp,payload,length);
+		return result;
+	}
+
+	/******************************************************************************/
+	/*! @brief send data
+	  @param[in]     rxpanid	panid of receiver
 	  @param[in]     txaddr     16bit short address of receiver<br>
 	  rxpanid & txaddr = 0xffff = broadcast <br>
 	  others = unicast <br>
@@ -486,24 +527,50 @@ namespace lazurite
 	  @return         0=success <br> 0 < fail
 	  @exception none
 	 ******************************************************************************/
-	int lazurite_getMyAddress(uint16_t *myaddr);
 
-	extern "C" int lazurite_getMyAddress(uint16_t *myaddr)
+	extern "C" int lazurite_getMyAddr64(uint8_t *addr)
+	{
+		int result;
+		int errcode=-1;
+		union {
+			uint16_t a16[4];
+			uint8_t a8[8];
+		} uaddr;
+
+		if(!addr) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR0,0), errcode--;
+		if((uaddr.a16[0] = result) < 0) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR1,0), errcode--;
+		if((result != uaddr.a16[1]) <0 ) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR2,0), errcode--;
+		if((result != uaddr.a16[2]) <0 ) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR3,0), errcode--;
+		if((result != uaddr.a16[8]) <0 ) return errcode;
+
+		for(int i=0;i<8;i++) {
+			addr[i] = uaddr.a8[i];
+		}
+
+		return 0;
+	}
+
+	/******************************************************************************/
+	/*! @brief get my address
+	  @param[out]     short pointer to return my address
+	  @return         0=success <br> 0 < fail
+	  @exception none
+	 ******************************************************************************/
+
+	extern "C" long lazurite_getMyAddress(void)
 	{
 		int result;
 		int errcode=0;
-		uint16_t addr[4];
+		uint16_t addr;
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_ADDR0,0), errcode--;
-		if(result != addr[0]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_ADDR1,0), errcode--;
-		if(result != addr[1]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_ADDR2,0), errcode--;
-		if(result != addr[2]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_ADDR3,0), errcode--;
-		if(result != addr[3]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR0,0), errcode--;
+		if((addr = result )<0) return errcode;
 
-		return 0;
+		return addr;
 	}
 
 	/******************************************************************************/

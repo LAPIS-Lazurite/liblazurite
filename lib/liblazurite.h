@@ -164,13 +164,20 @@ namespace lazurite
 	int lazurite_rxDisable(void);
 
 	/******************************************************************************/
-	/*! @brief get my address
-	  @param[out]     short pointer to return my address
-	  @return         0=success <br> 0 < fail
+	/*! @brief getMyAddr64
+	  @param[out]     set pointer of 8 x 8bit array for 64bit address
+	  @return         0 = OK <br> 0 < fail
 	  @exception none
 	 ******************************************************************************/
-	int lazurite_getMyAddress(uint16_t *myaddr);
+	int lazurite_getMyAddr64(uint8_t *addr);
 
+	/******************************************************************************/
+	/*! @brief getMyAddress
+	  @param[out]     short pointer to return my address
+	  @return         0 > address <br> 0 < fail
+	  @exception none
+	 ******************************************************************************/
+	long lazurite_getMyAddress(void);
 
 	/******************************************************************************/
 	/*! @brief send data via 920MHz

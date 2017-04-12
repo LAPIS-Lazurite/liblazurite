@@ -54,6 +54,7 @@ int main(int argc, char **argv)
 	uint8_t rate=100;
 	uint8_t pwr=20;
 	uint16_t panid=0xabcd;
+	uint8_t myaddr_be[8];
 
 	// set Signal Trap
 	setSignal(SIGINT);
@@ -78,6 +79,19 @@ int main(int argc, char **argv)
 	if(argc>4) {
 		pwr = strtol(argv[4],&en,0);
 	}
+
+	result = lazurite_getMyAddr64(myaddr_be);
+	printf("my address:: %02x%02x%02x%02x %02x%02x%02x%02x\n",
+		myaddr_be[0],
+		myaddr_be[1],
+		myaddr_be[2],
+		myaddr_be[3],
+		myaddr_be[4],
+		myaddr_be[5],
+		myaddr_be[6],
+		myaddr_be[7]
+	);
+
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) {
 		printf("lazurite_begin fail = %d\n",result);
@@ -99,7 +113,27 @@ int main(int argc, char **argv)
 		result = lazurite_read(raw,&size);
 		if(result > 0 ) {
 			result = lazurite_decMac(&mac,raw,size);
-			printf("%04x\t%04x\t%04x\t%04x\t", mac.rx_panid,*((uint16_t*) mac.rx_addr), mac.tx_panid,*((uint16_t*)mac.tx_addr));
+			printf("%02x\t%04x\t%02x%02x%02x%02x%02x%02x%02x%02x\t%04x\t%02x%02x%02x%02x%02x%02x%02x%02x\t",
+				mac.seq_num,
+				mac.rx_panid,
+				mac.rx_addr[7],
+				mac.rx_addr[6],
+				mac.rx_addr[5],
+				mac.rx_addr[4],
+				mac.rx_addr[3],
+				mac.rx_addr[2],
+				mac.rx_addr[1],
+				mac.rx_addr[0],
+				mac.tx_panid,
+				mac.tx_addr[7],
+				mac.tx_addr[6],
+				mac.tx_addr[5],
+				mac.tx_addr[4],
+				mac.tx_addr[3],
+				mac.tx_addr[2],
+				mac.tx_addr[1],
+				mac.tx_addr[0]
+				);
 			printf("%s\n", raw+mac.payload_offset);
 		}
 		usleep(100000);

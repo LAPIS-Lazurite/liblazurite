@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	uint8_t rate=100;
 	uint8_t pwr=20;
 	uint16_t panid=0xabcd;
-	uint16_t myaddr;
+	uint8_t myaddr[8];
 
 	// set Signal Trap
 	setSignal(SIGINT);
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	if(argc>4) {
 		pwr = strtol(argv[4],&en,0);
 	}
-	result = lazurite_getMyAddress(&myaddr);
+	result = lazurite_getMyAddr64(myaddr);
 	printf("myaddress=0x%04x\n",myaddr);
 	
 	result = lazurite_begin(ch,panid,rate,pwr);
