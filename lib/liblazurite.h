@@ -51,15 +51,15 @@ namespace lazurite
 			uint8_t panid_comp;	/*!< panid comp */
 			uint8_t seq_comp;	/*!< sequence compression */
 			uint8_t ielist;	/*!< ielist */
-			uint8_t tx_addr_type;	/*!< tx address type none/8bit/16bit/64bit */
+			uint8_t dst_addr_type;	/*!< tx address type none/8bit/16bit/64bit */
 			uint8_t frame_ver;	/*!< framce version */
-			uint8_t rx_addr_type;	/*!< rx address type none/8bit/16bit/64bit */
+			uint8_t src_addr_type;	/*!< rx address type none/8bit/16bit/64bit */
 			uint8_t seq_num;	/*!< sequence number */
 			uint8_t addr_type;	/*!< address type */
-			uint16_t rx_panid;	/*!< rx panid */
-			uint8_t  rx_addr[8];	/*!< rx address */
-			uint16_t tx_panid;	/*!< tx panid */
-			uint8_t  tx_addr[8];	/*!< tx address */
+			uint16_t dst_panid;	/*!< rx panid */
+			uint8_t  dst_addr[8];	/*!< rx address */
+			uint16_t src_panid;	/*!< tx panid */
+			uint8_t  src_addr[8];	/*!< tx address */
 			uint16_t payload_offset;	/*!< pointer of payload */
 			uint16_t payload_len;	/*!<  length of payload */
 			//uint8_t rssi;
@@ -135,9 +135,19 @@ namespace lazurite
 	int lazurite_close(void);
 
 	/******************************************************************************/
+	/*! @brief send data by 64bit mac address
+	  @param[in]     rxpanid	panid of receiver
+	  @param[in]     dst_le     8 x 8bit 64bit MAC address(little endian array)<br>
+	  @param[in]     payload start poiter of data to be sent
+	  @param[in]     length length of payload
+	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+	  @exception none
+	 ******************************************************************************/
+	int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length);
+	/******************************************************************************/
 	/*! @brief send data
 	  @param[in]     rxpanid	panid of receiver
-	  @param[in]     txaddr     16bit short address of receiver<br>
+	  @param[in]     dst_be     8 x 8bit 64bit MAC address(big endian array)<br>
 	  rxpanid & txaddr = 0xffff = broadcast <br>
 	  others = unicast <br>
 	  @param[in]     payload start poiter of data to be sent
@@ -146,6 +156,18 @@ namespace lazurite
 	  @exception none
 	 ******************************************************************************/
 	int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length);
+	/******************************************************************************/
+	/*! @brief send data
+	  @param[in]     rxpanid	panid of receiver
+	  @param[in]     dst     16bit short address of receiver<br>
+	  rxpanid & txaddr = 0xffff = broadcast <br>
+	  others = unicast <br>
+	  @param[in]     payload start poiter of data to be sent
+	  @param[in]     length length of payload
+	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+	  @exception none
+	 ******************************************************************************/
+	int lazurite_send(uint16_t rxpanid,uint16_t dst,const void* payload, uint16_t length);
 
 	/******************************************************************************/
 	/*! @brief enable RX

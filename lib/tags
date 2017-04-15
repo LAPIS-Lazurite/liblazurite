@@ -17,19 +17,19 @@ IOCTL_GET_BPS	drv-lazurite.h	37;"	d
 IOCTL_GET_CCA_WAIT	drv-lazurite.h	69;"	d
 IOCTL_GET_CH	drv-lazurite.h	33;"	d
 IOCTL_GET_DRV_MODE	drv-lazurite.h	61;"	d
+IOCTL_GET_DST_ADDR0	drv-lazurite.h	51;"	d
+IOCTL_GET_DST_ADDR1	drv-lazurite.h	53;"	d
+IOCTL_GET_DST_ADDR2	drv-lazurite.h	55;"	d
+IOCTL_GET_DST_ADDR3	drv-lazurite.h	57;"	d
+IOCTL_GET_DST_PANID	drv-lazurite.h	41;"	d
 IOCTL_GET_MY_ADDR0	drv-lazurite.h	43;"	d
 IOCTL_GET_MY_ADDR1	drv-lazurite.h	45;"	d
 IOCTL_GET_MY_ADDR2	drv-lazurite.h	47;"	d
 IOCTL_GET_MY_ADDR3	drv-lazurite.h	49;"	d
 IOCTL_GET_MY_PANID	drv-lazurite.h	39;"	d
 IOCTL_GET_PWR	drv-lazurite.h	35;"	d
-IOCTL_GET_RX_ADDR0	drv-lazurite.h	51;"	d
-IOCTL_GET_RX_ADDR1	drv-lazurite.h	53;"	d
-IOCTL_GET_RX_ADDR2	drv-lazurite.h	55;"	d
-IOCTL_GET_RX_ADDR3	drv-lazurite.h	57;"	d
 IOCTL_GET_RX_NSEC0	drv-lazurite.h	73;"	d
 IOCTL_GET_RX_NSEC1	drv-lazurite.h	74;"	d
-IOCTL_GET_RX_PANID	drv-lazurite.h	41;"	d
 IOCTL_GET_RX_RSSI	drv-lazurite.h	75;"	d
 IOCTL_GET_RX_SEC0	drv-lazurite.h	71;"	d
 IOCTL_GET_RX_SEC1	drv-lazurite.h	72;"	d
@@ -49,6 +49,11 @@ IOCTL_SET_CCA_WAIT	drv-lazurite.h	70;"	d
 IOCTL_SET_CH	drv-lazurite.h	34;"	d
 IOCTL_SET_CLOSE	drv-lazurite.h	28;"	d
 IOCTL_SET_DRV_MODE	drv-lazurite.h	62;"	d
+IOCTL_SET_DST_ADDR0	drv-lazurite.h	52;"	d
+IOCTL_SET_DST_ADDR1	drv-lazurite.h	54;"	d
+IOCTL_SET_DST_ADDR2	drv-lazurite.h	56;"	d
+IOCTL_SET_DST_ADDR3	drv-lazurite.h	58;"	d
+IOCTL_SET_DST_PANID	drv-lazurite.h	42;"	d
 IOCTL_SET_MY_ADDR0	drv-lazurite.h	44;"	d
 IOCTL_SET_MY_ADDR1	drv-lazurite.h	46;"	d
 IOCTL_SET_MY_ADDR2	drv-lazurite.h	48;"	d
@@ -57,11 +62,6 @@ IOCTL_SET_MY_PANID	drv-lazurite.h	40;"	d
 IOCTL_SET_PWR	drv-lazurite.h	36;"	d
 IOCTL_SET_RXOFF	drv-lazurite.h	27;"	d
 IOCTL_SET_RXON	drv-lazurite.h	26;"	d
-IOCTL_SET_RX_ADDR0	drv-lazurite.h	52;"	d
-IOCTL_SET_RX_ADDR1	drv-lazurite.h	54;"	d
-IOCTL_SET_RX_ADDR2	drv-lazurite.h	56;"	d
-IOCTL_SET_RX_ADDR3	drv-lazurite.h	58;"	d
-IOCTL_SET_RX_PANID	drv-lazurite.h	42;"	d
 IOCTL_SET_SEND_MODE	drv-lazurite.h	30;"	d
 IOCTL_SET_SENSE_TIME	drv-lazurite.h	64;"	d
 IOCTL_SET_TX_INTERVAL	drv-lazurite.h	68;"	d
@@ -77,6 +77,12 @@ addr_type	liblazurite.h	/^			uint8_t addr_type;	\/*!< address type *\/$/;"	m	str
 alignment	dyliblazurite.cpp	/^		s_MAC_HEADER_BIT_ALIGNMENT alignment;$/;"	m	union:lazurite::__anon3	file:
 buf	dyliblazurite.cpp	/^	static char buf[256];$/;"	m	namespace:lazurite	file:
 data	dyliblazurite.cpp	/^		uint8_t data[2];$/;"	m	union:lazurite::__anon3	file:
+dst_addr	dyliblazurite.cpp	/^		uint8_t  dst_addr[8];$/;"	m	struct:lazurite::__anon4	file:
+dst_addr	liblazurite.h	/^			uint8_t  dst_addr[8];	\/*!< rx address *\/$/;"	m	struct:lazurite::__anon1
+dst_addr_type	dyliblazurite.cpp	/^		uint8_t dst_addr_type:2;$/;"	m	struct:lazurite::__anon2	file:
+dst_addr_type	liblazurite.h	/^			uint8_t dst_addr_type;	\/*!< tx address type none\/8bit\/16bit\/64bit *\/$/;"	m	struct:lazurite::__anon1
+dst_panid	dyliblazurite.cpp	/^		uint16_t dst_panid;$/;"	m	struct:lazurite::__anon4	file:
+dst_panid	liblazurite.h	/^			uint16_t dst_panid;	\/*!< rx panid *\/$/;"	m	struct:lazurite::__anon1
 fp	dyliblazurite.cpp	/^	static int fp;  \/*< file descripter fo IOCTL *\/$/;"	m	namespace:lazurite	file:
 frame_type	dyliblazurite.cpp	/^		uint8_t frame_type:3;$/;"	m	struct:lazurite::__anon2	file:
 frame_type	liblazurite.h	/^			uint8_t frame_type;	\/*!< frame type *\/$/;"	m	struct:lazurite::__anon1
@@ -112,7 +118,8 @@ lazurite_remove	dyliblazurite.cpp	/^	extern "C" int lazurite_remove(void) $/;"	f
 lazurite_rxDisable	dyliblazurite.cpp	/^	extern "C" int lazurite_rxDisable(void)$/;"	f	namespace:lazurite
 lazurite_rxEnable	dyliblazurite.cpp	/^	extern "C" int lazurite_rxEnable(void)$/;"	f	namespace:lazurite
 lazurite_send	dyliblazurite.cpp	/^	extern "C" int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
-lazurite_send64	dyliblazurite.cpp	/^	extern "C" int lazurite_send64(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
+lazurite_send64be	dyliblazurite.cpp	/^	extern "C" int lazurite_send64be(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
+lazurite_send64le	dyliblazurite.cpp	/^	extern "C" int lazurite_send64le(uint16_t panid,uint8_t *dst_le,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
 lazurite_setAddrType	dyliblazurite.cpp	/^	extern "C" int lazurite_setAddrType(uint8_t addr_type)$/;"	f	namespace:lazurite
 lazurite_setCcaWait	dyliblazurite.cpp	/^	extern "C" int lazurite_setCcaWait(uint8_t ccawait)$/;"	f	namespace:lazurite
 lazurite_setRxAddr	dyliblazurite.cpp	/^	extern "C" int lazurite_setRxAddr(uint16_t tmp_rxaddr)$/;"	f	namespace:lazurite
@@ -135,12 +142,6 @@ pending	dyliblazurite.cpp	/^		uint8_t pending:1;$/;"	m	struct:lazurite::__anon2	
 pending	liblazurite.h	/^			uint8_t pending;	\/*!< pending *\/$/;"	m	struct:lazurite::__anon1
 raw	dyliblazurite.cpp	/^		char *raw;$/;"	m	struct:lazurite::__anon4	file:
 raw_len	dyliblazurite.cpp	/^		int16_t raw_len;$/;"	m	struct:lazurite::__anon4	file:
-rx_addr	dyliblazurite.cpp	/^		uint8_t  rx_addr[8];$/;"	m	struct:lazurite::__anon4	file:
-rx_addr	liblazurite.h	/^			uint8_t  rx_addr[8];	\/*!< rx address *\/$/;"	m	struct:lazurite::__anon1
-rx_addr_type	dyliblazurite.cpp	/^		uint8_t rx_addr_type:2;$/;"	m	struct:lazurite::__anon2	file:
-rx_addr_type	liblazurite.h	/^			uint8_t rx_addr_type;	\/*!< rx address type none\/8bit\/16bit\/64bit *\/$/;"	m	struct:lazurite::__anon1
-rx_panid	dyliblazurite.cpp	/^		uint16_t rx_panid;$/;"	m	struct:lazurite::__anon4	file:
-rx_panid	liblazurite.h	/^			uint16_t rx_panid;	\/*!< rx panid *\/$/;"	m	struct:lazurite::__anon1
 s_MAC_HEADER_BIT_ALIGNMENT	dyliblazurite.cpp	/^	} s_MAC_HEADER_BIT_ALIGNMENT;$/;"	t	namespace:lazurite	typeref:struct:lazurite::__anon2	file:
 sec_enb	dyliblazurite.cpp	/^		uint8_t sec_enb:1;$/;"	m	struct:lazurite::__anon2	file:
 sec_enb	liblazurite.h	/^			uint8_t sec_enb;	\/*!< security enable *\/$/;"	m	struct:lazurite::__anon1
@@ -148,11 +149,11 @@ seq_comp	dyliblazurite.cpp	/^		uint8_t seq_comp:1;$/;"	m	struct:lazurite::__anon
 seq_comp	liblazurite.h	/^			uint8_t seq_comp;	\/*!< sequence compression *\/$/;"	m	struct:lazurite::__anon1
 seq_num	dyliblazurite.cpp	/^		uint8_t seq_num;$/;"	m	struct:lazurite::__anon4	file:
 seq_num	liblazurite.h	/^			uint8_t seq_num;	\/*!< sequence number *\/$/;"	m	struct:lazurite::__anon1
+src_addr	dyliblazurite.cpp	/^		uint8_t  src_addr[8];$/;"	m	struct:lazurite::__anon4	file:
+src_addr	liblazurite.h	/^			uint8_t  src_addr[8];	\/*!< tx address *\/$/;"	m	struct:lazurite::__anon1
+src_addr_type	dyliblazurite.cpp	/^		uint8_t src_addr_type:2;$/;"	m	struct:lazurite::__anon2	file:
+src_addr_type	liblazurite.h	/^			uint8_t src_addr_type;	\/*!< rx address type none\/8bit\/16bit\/64bit *\/$/;"	m	struct:lazurite::__anon1
+src_panid	dyliblazurite.cpp	/^		uint16_t src_panid;$/;"	m	struct:lazurite::__anon4	file:
+src_panid	liblazurite.h	/^			uint16_t src_panid;	\/*!< tx panid *\/$/;"	m	struct:lazurite::__anon1
 subghz_decMac	dyliblazurite.cpp	/^	static void subghz_decMac(SUBGHZ_MAC_PARAM *mac,void *raw,uint16_t raw_len)$/;"	f	namespace:lazurite
-tx_addr	dyliblazurite.cpp	/^		uint8_t  tx_addr[8];$/;"	m	struct:lazurite::__anon4	file:
-tx_addr	liblazurite.h	/^			uint8_t  tx_addr[8];	\/*!< tx address *\/$/;"	m	struct:lazurite::__anon1
-tx_addr_type	dyliblazurite.cpp	/^		uint8_t tx_addr_type:2;$/;"	m	struct:lazurite::__anon2	file:
-tx_addr_type	liblazurite.h	/^			uint8_t tx_addr_type;	\/*!< tx address type none\/8bit\/16bit\/64bit *\/$/;"	m	struct:lazurite::__anon1
-tx_panid	dyliblazurite.cpp	/^		uint16_t tx_panid;$/;"	m	struct:lazurite::__anon4	file:
-tx_panid	liblazurite.h	/^			uint16_t tx_panid;	\/*!< tx panid *\/$/;"	m	struct:lazurite::__anon1
 u_MAC_HEADER	dyliblazurite.cpp	/^	} u_MAC_HEADER;$/;"	t	namespace:lazurite	typeref:union:lazurite::__anon3	file:

@@ -99,9 +99,9 @@ namespace lazurite
 		uint8_t nop:1;
 		uint8_t seq_comp:1;
 		uint8_t ielist:1;
-		uint8_t rx_addr_type:2;
+		uint8_t dst_addr_type:2;
 		uint8_t frame_ver:2;
-		uint8_t tx_addr_type:2;
+		uint8_t src_addr_type:2;
 	} s_MAC_HEADER_BIT_ALIGNMENT;
 
 	/*! @union u_MAC_HEADER
@@ -126,10 +126,10 @@ namespace lazurite
 		u_MAC_HEADER mac_header;
 		uint8_t seq_num;
 		uint8_t addr_type;
-		uint16_t rx_panid;
-		uint8_t  rx_addr[8];
-		uint16_t tx_panid;
-		uint8_t  tx_addr[8];
+		uint16_t dst_panid;
+		uint8_t  dst_addr[8];
+		uint16_t src_panid;
+		uint8_t  src_addr[8];
 		char *raw;
 		int16_t raw_len;
 		char *payload;
@@ -159,78 +159,78 @@ namespace lazurite
 		if(!mac->mac_header.alignment.seq_comp) {
 			mac->seq_num = buf[offset],offset++;
 		}
-		if(mac->mac_header.alignment.rx_addr_type) addr_type = 4;
+		if(mac->mac_header.alignment.dst_addr_type) addr_type = 4;
 		else addr_type = 0;
-		if(mac->mac_header.alignment.tx_addr_type) addr_type += 2;
+		if(mac->mac_header.alignment.src_addr_type) addr_type += 2;
 		if(mac->mac_header.alignment.panid_comp) addr_type += 1;
 		mac->addr_type = addr_type;
-		//rx_panid
+		//dst_panid
 		switch(addr_type){
 			case 1:
 			case 4:
 			case 6:
-				mac->rx_panid = buf[offset+1];
-				mac->rx_panid = (mac->rx_panid<<8) + buf[offset];
+				mac->dst_panid = buf[offset+1];
+				mac->dst_panid = (mac->dst_panid<<8) + buf[offset];
 				offset+=2;
 				break;
 			default:
-				mac->rx_panid = 0xffff;
+				mac->src_panid = 0xffff;
 				break;
 		}
-		//rx_addr
-		switch(mac->mac_header.alignment.rx_addr_type)
+		//dst_addr
+		switch(mac->mac_header.alignment.dst_addr_type)
 		{
 			case 1:
-				mac->rx_addr[0] = buf[offset],offset++;
+				mac->dst_addr[0] = buf[offset],offset++;
 				for(i=1;i<8;i++) {
-					mac->rx_addr[i] = 0;
+					mac->dst_addr[i] = 0;
 				}
 				break;
 			case 2:
-				mac->rx_addr[0] = buf[offset],offset++;
-				mac->rx_addr[1] = buf[offset],offset++;
+				mac->dst_addr[0] = buf[offset],offset++;
+				mac->dst_addr[1] = buf[offset],offset++;
 				for(i=2;i<8;i++) {
-					mac->rx_addr[i] = 0;
+					mac->dst_addr[i] = 0;
 				}
 				break;
 			case 3:
 				for(i=0;i<8;i++){
-					mac->rx_addr[i] = buf[offset],offset++;
+					mac->dst_addr[i] = buf[offset],offset++;
 				}
 			default:
 				break;
 		}
-		// tx_panid
+		// src_panid
 		switch(mac->addr_type){
 			case 2:
-				mac->tx_panid = buf[offset+1];
-				mac->tx_panid = (mac->tx_panid<<8) + buf[offset];
+				mac->src_panid = buf[offset+1];
+				mac->src_panid = (mac->src_panid<<8) + buf[offset];
 				offset+=2;
 				break;
 			default:
-				mac->tx_panid = 0xffff;
+				mac->src_panid = 0xffff;
 				break;
 		}
-		//tx_addr
-		memset(mac->tx_addr,0xffff,sizeof(mac->tx_addr));
-		switch(mac->mac_header.alignment.tx_addr_type)
+		//src_addr
+		memset(mac->src_addr,0xffff,sizeof(mac->src_addr));
+		switch(mac->mac_header.alignment.src_addr_type)
 		{
 			case 1:
-				mac->tx_addr[0] = buf[offset],offset++;
+				mac->src_addr[0] = buf[offset],offset++;
 				for(i=1;i<8;i++) {
-					mac->tx_addr[i] = 0;
+					mac->src_addr[i] = 0;
 				}
 				break;
 			case 2:
-				mac->tx_addr[0] = buf[offset],offset++;
-				mac->tx_addr[1] = buf[offset],offset++;
+				mac->src_addr[0] = buf[offset],offset++;
+				mac->src_addr[1] = buf[offset],offset++;
 				for(i=2;i<8;i++) {
-					mac->tx_addr[i] = 0;
+					mac->src_addr[i] = 0;
 				}
 				break;
 			case 3:
 				for(i=0;i<8;i++){
-					mac->tx_addr[i] = buf[offset],offset++;
+					mac->src_addr[i] = buf[offset],offset++;
 				}
 			default:
 				break;
@@ -271,8 +271,8 @@ namespace lazurite
 			nsec,
 			mac.seq_num,
 			rssi,
-			mac.tx_panid,
-			mac.tx_addr,
+			mac.src_panid,
+			mac.src_addr,
 			raw[mac.payload_offset]
 			);
 		*size = strnlen(stream,512);
@@ -343,7 +343,7 @@ namespace lazurite
 	extern "C" int lazurite_setRxAddr(uint16_t tmp_rxaddr)
 	{
 		int result;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR0,tmp_rxaddr);
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,tmp_rxaddr);
 		if(result != tmp_rxaddr) {
 			return -1;
 		}
@@ -359,7 +359,7 @@ namespace lazurite
 	extern "C" int lazurite_setTxPanid(uint16_t txpanid)
 	{
 		int result;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_PANID,txpanid);
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_PANID,txpanid);
 		if(result != txpanid) return -1;
 		return 0;
 	}
@@ -431,7 +431,7 @@ namespace lazurite
 	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
 	  @exception none
 	 ******************************************************************************/
-	extern "C" int lazurite_send64(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)
+	extern "C" int lazurite_send64be(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)
 	{
 		int result;
 		int errcode=-1;
@@ -445,16 +445,57 @@ namespace lazurite
 			uaddr.a8[7-i] = dst_be[i];
 		}
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_PANID,panid), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_PANID,panid), errcode--;
 		if(result != panid) return errcode;
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR0,uaddr.a16[0]), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,uaddr.a16[0]), errcode--;
 		if(result != uaddr.a16[0]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR1,uaddr.a16[1]), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR1,uaddr.a16[1]), errcode--;
 		if(result != uaddr.a16[1]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR2,uaddr.a16[2]), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR2,uaddr.a16[2]), errcode--;
 		if(result != uaddr.a16[2]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR3,uaddr.a16[3]), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR3,uaddr.a16[3]), errcode--;
+		if(result != uaddr.a16[3]) return errcode;
+
+		result = write(fp,payload,length);
+		return result;
+	}
+
+	/******************************************************************************/
+	/*! @brief send data
+	  @param[in]     rxpanid	panid of receiver
+	  @param[in]     dst_le     8x8bit address pointer for 64bit MAC address(big endian)<br>
+	  rxpanid & txaddr = 0xffff = broadcast <br>
+	  others = unicast <br>
+	  @param[in]     payload start poiter of data to be sent
+	  @param[in]     length length of payload
+	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+	  @exception none
+	 ******************************************************************************/
+	extern "C" int lazurite_send64le(uint16_t panid,uint8_t *dst_le,const void* payload, uint16_t length)
+	{
+		int result;
+		int errcode=-1;
+		union {
+			uint8_t a8[8];
+			uint16_t a16[4];
+		} uaddr;
+
+		if(!dst_le) return errcode;
+		for(int i=0;i<7;i++) {
+			uaddr.a8[i] = dst_le[i];
+		}
+
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_PANID,panid), errcode--;
+		if(result != panid) return errcode;
+
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,uaddr.a16[0]), errcode--;
+		if(result != uaddr.a16[0]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR1,uaddr.a16[1]), errcode--;
+		if(result != uaddr.a16[1]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR2,uaddr.a16[2]), errcode--;
+		if(result != uaddr.a16[2]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR3,uaddr.a16[3]), errcode--;
 		if(result != uaddr.a16[3]) return errcode;
 
 		result = write(fp,payload,length);
@@ -477,10 +518,10 @@ namespace lazurite
 		int result;
 		int errcode=0;
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_PANID,rxpanid), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_PANID,rxpanid), errcode--;
 		if(result != rxpanid) return errcode;
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_RX_ADDR0,rxaddr), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,rxaddr), errcode--;
 		if(result != rxaddr) return errcode;
 
 		result = write(fp,payload,length);
@@ -610,15 +651,15 @@ namespace lazurite
 		mac->panid_comp = param.mac_header.alignment.panid_comp;
 		mac->seq_comp = param.mac_header.alignment.seq_comp;
 		mac->ielist = param.mac_header.alignment.ielist;
-		mac->tx_addr_type = param.mac_header.alignment.tx_addr_type;
+		mac->src_addr_type = param.mac_header.alignment.src_addr_type;
 		mac->frame_ver = param.mac_header.alignment.frame_ver;
-		mac->rx_addr_type = param.mac_header.alignment.rx_addr_type;
+		mac->dst_addr_type = param.mac_header.alignment.dst_addr_type;
 		mac->seq_num = param.seq_num;
 		mac->addr_type = param.addr_type;
-		mac->rx_panid = param.rx_panid;
-		memcpy(mac->rx_addr,param.rx_addr,8);
-		mac->tx_panid = param.tx_panid;
-		memcpy(mac->tx_addr,param.tx_addr,8);
+		mac->dst_panid = param.dst_panid;
+		memcpy(mac->dst_addr,param.dst_addr,8);
+		mac->src_panid = param.src_panid;
+		memcpy(mac->src_addr,param.src_addr,8);
 		mac->payload_offset = param.raw_len - param.payload_len;
 		mac->payload_len = param.payload_len;
 		return param.raw_len;
@@ -715,8 +756,8 @@ namespace lazurite
 			}
 			result=read(fp,buf,tmp_size);
 			subghz_decMac(&mac,buf,tmp_size);
-			uint16_t *tx_addr = (uint16_t*)mac.tx_addr;
-			if ((*tx_addr == linkedAddr) || (linkedAddr == 0xFFFF))
+			uint16_t *src_addr = (uint16_t*)mac.src_addr;
+			if ((*src_addr == linkedAddr) || (linkedAddr == 0xFFFF))
 			{
 				*size = mac.payload_len;
 				result = mac.payload_len;
@@ -801,7 +842,7 @@ namespace lazurite
 	/*! @brief get address type
 	  @param[in]     none 
 	  @return         address type
-	  type | rx_addr | tx_addr | panid_comp | rx panid | tx_panid
+	  type | rx_addr | src_addr | panid_comp | rx panid | src_panid
 	  -----| --------| --------| ---------- | -------- | --------
 	  0 | N | N | 0 | N | N
 	  1 | N | N | 1 | Y | N
