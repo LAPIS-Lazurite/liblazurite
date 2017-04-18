@@ -118,8 +118,8 @@ lazurite_remove	dyliblazurite.cpp	/^	extern "C" int lazurite_remove(void) $/;"	f
 lazurite_rxDisable	dyliblazurite.cpp	/^	extern "C" int lazurite_rxDisable(void)$/;"	f	namespace:lazurite
 lazurite_rxEnable	dyliblazurite.cpp	/^	extern "C" int lazurite_rxEnable(void)$/;"	f	namespace:lazurite
 lazurite_send	dyliblazurite.cpp	/^	extern "C" int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
-lazurite_send64be	dyliblazurite.cpp	/^	extern "C" int lazurite_send64be(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
-lazurite_send64le	dyliblazurite.cpp	/^	extern "C" int lazurite_send64le(uint16_t panid,uint8_t *dst_le,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
+lazurite_send64be	dyliblazurite.cpp	/^	extern "C" int lazurite_send64be(uint8_t *dst_be,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
+lazurite_send64le	dyliblazurite.cpp	/^	extern "C" int lazurite_send64le(uint8_t *dst_le,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
 lazurite_setAddrType	dyliblazurite.cpp	/^	extern "C" int lazurite_setAddrType(uint8_t addr_type)$/;"	f	namespace:lazurite
 lazurite_setCcaWait	dyliblazurite.cpp	/^	extern "C" int lazurite_setCcaWait(uint8_t ccawait)$/;"	f	namespace:lazurite
 lazurite_setRxAddr	dyliblazurite.cpp	/^	extern "C" int lazurite_setRxAddr(uint16_t tmp_rxaddr)$/;"	f	namespace:lazurite

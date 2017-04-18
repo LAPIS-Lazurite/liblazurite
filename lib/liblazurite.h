@@ -136,38 +136,39 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief send data by 64bit mac address
-	  @param[in]     rxpanid	panid of receiver
+	  @param[in]     dst_panid	panid of receiver
+	  @param[in]     dst_be     8 x 8bit 64bit MAC address(big endian array)<br>
+	  @param[in]     payload start poiter of data to be sent
+	  @param[in]     length length of payload
+	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+	  @exception none
+	 ******************************************************************************/
+	int lazurite_send64be(uint8_t *dst_be,const void* payload, uint16_t length);
+
+	/******************************************************************************/
+	/*! @brief send data by 64bit mac address
+	  @param[in]     dst_panid	panid of receiver
 	  @param[in]     dst_le     8 x 8bit 64bit MAC address(little endian array)<br>
 	  @param[in]     payload start poiter of data to be sent
 	  @param[in]     length length of payload
 	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
 	  @exception none
 	 ******************************************************************************/
-	int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length);
+	int lazurite_send64le(uint8_t *dst_le,const void* payload, uint16_t length);
+
 	/******************************************************************************/
 	/*! @brief send data
 	  @param[in]     rxpanid	panid of receiver
-	  @param[in]     dst_be     8 x 8bit 64bit MAC address(big endian array)<br>
-	  rxpanid & txaddr = 0xffff = broadcast <br>
+	  @param[in]     dst_addr   16bit short address<br>
+	  dst_panid & dst_addr = 0xffff = broadcast <br>
+	  only dst_addr = 0xffff = group cast <br>
 	  others = unicast <br>
 	  @param[in]     payload start poiter of data to be sent
 	  @param[in]     length length of payload
 	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
 	  @exception none
 	 ******************************************************************************/
-	int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length);
-	/******************************************************************************/
-	/*! @brief send data
-	  @param[in]     rxpanid	panid of receiver
-	  @param[in]     dst     16bit short address of receiver<br>
-	  rxpanid & txaddr = 0xffff = broadcast <br>
-	  others = unicast <br>
-	  @param[in]     payload start poiter of data to be sent
-	  @param[in]     length length of payload
-	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
-	  @exception none
-	 ******************************************************************************/
-	int lazurite_send(uint16_t rxpanid,uint16_t dst,const void* payload, uint16_t length);
+	int lazurite_send(uint16_t dst_panid,uint16_t dst_addr,const void* payload, uint16_t length);
 
 	/******************************************************************************/
 	/*! @brief enable RX

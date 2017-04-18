@@ -310,6 +310,7 @@ namespace lazurite
 
 		// open device driver
 		system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko");
+		//system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=0xFFFF");
 		system("sudo chmod 777 /dev/lzgw");
 		fp = open("/dev/lzgw",O_RDWR),errcode--;
 		if(fp<0) return -1;
@@ -431,7 +432,7 @@ namespace lazurite
 	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
 	  @exception none
 	 ******************************************************************************/
-	extern "C" int lazurite_send64be(uint16_t panid,uint8_t *dst_be,const void* payload, uint16_t length)
+	extern "C" int lazurite_send64be(uint8_t *dst_be,const void* payload, uint16_t length)
 	{
 		int result;
 		int errcode=-1;
@@ -441,12 +442,9 @@ namespace lazurite
 		} uaddr;
 
 		if(!dst_be) return errcode;
-		for(int i=0;i<7;i++) {
+		for(int i=0;i<8;i++) {
 			uaddr.a8[7-i] = dst_be[i];
 		}
-
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_PANID,panid), errcode--;
-		if(result != panid) return errcode;
 
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,uaddr.a16[0]), errcode--;
 		if(result != uaddr.a16[0]) return errcode;
@@ -472,7 +470,7 @@ namespace lazurite
 	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
 	  @exception none
 	 ******************************************************************************/
-	extern "C" int lazurite_send64le(uint16_t panid,uint8_t *dst_le,const void* payload, uint16_t length)
+	extern "C" int lazurite_send64le(uint8_t *dst_le,const void* payload, uint16_t length)
 	{
 		int result;
 		int errcode=-1;
@@ -485,9 +483,6 @@ namespace lazurite
 		for(int i=0;i<7;i++) {
 			uaddr.a8[i] = dst_le[i];
 		}
-
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_PANID,panid), errcode--;
-		if(result != panid) return errcode;
 
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,uaddr.a16[0]), errcode--;
 		if(result != uaddr.a16[0]) return errcode;
@@ -573,23 +568,31 @@ namespace lazurite
 	{
 		int result;
 		int errcode=-1;
-		union {
-			uint16_t a16[4];
-			uint8_t a8[8];
-		} uaddr;
 
 		if(!addr) return errcode;
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR0,0), errcode--;
-		if((uaddr.a16[0] = result) < 0) return errcode;
+		if(result < 0) return errcode;
+		else {
+			addr[0] = (result >> 8 )&0x00FF;
+			addr[1] = (result >> 0 )&0x00FF;
+		}
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR1,0), errcode--;
-		if((result != uaddr.a16[1]) <0 ) return errcode;
+		if(result < 0) return errcode;
+		else {
+			addr[2] = (result >> 8 )&0x00FF;
+			addr[3] = (result >> 0 )&0x00FF;
+		}
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR2,0), errcode--;
-		if((result != uaddr.a16[2]) <0 ) return errcode;
+		if(result < 0) return errcode;
+		else {
+			addr[4] = (result >> 8 )&0x00FF;
+			addr[5] = (result >> 0 )&0x00FF;
+		}
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR3,0), errcode--;
-		if((result != uaddr.a16[8]) <0 ) return errcode;
-
-		for(int i=0;i<8;i++) {
-			addr[i] = uaddr.a8[i];
+		if(result < 0) return errcode;
+		else {
+			addr[6] = (result >> 8 )&0x00FF;
+			addr[7] = (result >> 0 )&0x00FF;
 		}
 
 		return 0;
@@ -608,7 +611,7 @@ namespace lazurite
 		int errcode=0;
 		uint16_t addr;
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR0,0), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR3,0), errcode--;
 		if((addr = result )<0) return errcode;
 
 		return addr;

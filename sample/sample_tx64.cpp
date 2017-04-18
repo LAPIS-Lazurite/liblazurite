@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	char* en;
 	uint8_t ch=36;
 	uint16_t panid=0xabcd;
-	uint16_t txaddr[8]={};
+	uint8_t dst_addr[8]={0x00,0x1d,0x12,0x90,0x00,0x03,0xac,0x54};
 	uint8_t rate = 100;
 	uint8_t pwr  = 20;
 	char payload[250] = {"hello world\n"};
@@ -68,6 +68,7 @@ int main(int argc, char **argv)
 	}
 
 	bStop = false;
+	printf("argc=%d",argc);
 	if(argc>1) {
 		ch = strtol(argv[1],&en,0);
 	}
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
 		panid = strtol(argv[2],&en,0);
 	}
 	if(argc>3) {
-		txaddr = strtol(argv[3],&en,0);
+		//dst_addr = strtol(argv[3],&en,0);
 	}
 	if(argc>4) {
 		rate = strtol(argv[4],&en,0);
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
 
 	while (bStop == false)
 	{
-		if((result=lazurite_send64be(panid,txaddr,payload,strlen(payload))) <0 ) 
+		if((result=lazurite_send64be(dst_addr,payload,strlen(payload))) <0 ) 
 		{
 			printf("tx error = %d\n",result);
 		}

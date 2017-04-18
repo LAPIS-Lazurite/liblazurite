@@ -80,8 +80,9 @@ int main(int argc, char **argv)
 		pwr = strtol(argv[4],&en,0);
 	}
 
+	printf("short address:: %04x\n",lazurite_getMyAddress());
 	result = lazurite_getMyAddr64(myaddr_be);
-	printf("my address:: %02x%02x%02x%02x %02x%02x%02x%02x\n",
+	printf("mac address::   %02x%02x%02x%02x %02x%02x%02x%02x\n",
 		myaddr_be[0],
 		myaddr_be[1],
 		myaddr_be[2],
