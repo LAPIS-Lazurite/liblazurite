@@ -1078,7 +1078,7 @@ namespace lazurite
 		int result;
 		int errcode=0;
 
-		result = ioctl(fp,IOCTL_CMD | IOCTL_SET_PROMISCUOUS,on), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_PROMISCUOUS,on), errcode--;
 		if(result != 0) return errcode;
 
 
