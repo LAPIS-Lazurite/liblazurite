@@ -11,61 +11,60 @@ DEFAULT_RATE	dyliblazurite.cpp	84;"	d	file:
 DEFAULT_RX_ADDR	dyliblazurite.cpp	83;"	d	file:
 DRV_OK	drv-lazurite.h	20;"	d
 IOCTL_CMD	drv-lazurite.h	24;"	d
-IOCTL_EEPROM	drv-lazurite.h	78;"	d
-IOCTL_GET_ADDR_TYPE	drv-lazurite.h	59;"	d
+IOCTL_EEPROM	drv-lazurite.h	83;"	d
+IOCTL_GET_ADDR_TYPE	drv-lazurite.h	57;"	d
 IOCTL_GET_BPS	drv-lazurite.h	37;"	d
-IOCTL_GET_CCA_WAIT	drv-lazurite.h	69;"	d
+IOCTL_GET_CCA_WAIT	drv-lazurite.h	67;"	d
 IOCTL_GET_CH	drv-lazurite.h	33;"	d
-IOCTL_GET_DRV_MODE	drv-lazurite.h	61;"	d
-IOCTL_GET_DST_ADDR0	drv-lazurite.h	51;"	d
-IOCTL_GET_DST_ADDR1	drv-lazurite.h	53;"	d
-IOCTL_GET_DST_ADDR2	drv-lazurite.h	55;"	d
-IOCTL_GET_DST_ADDR3	drv-lazurite.h	57;"	d
+IOCTL_GET_DRV_MODE	drv-lazurite.h	59;"	d
+IOCTL_GET_DST_ADDR0	drv-lazurite.h	49;"	d
+IOCTL_GET_DST_ADDR1	drv-lazurite.h	51;"	d
+IOCTL_GET_DST_ADDR2	drv-lazurite.h	53;"	d
+IOCTL_GET_DST_ADDR3	drv-lazurite.h	55;"	d
 IOCTL_GET_DST_PANID	drv-lazurite.h	41;"	d
 IOCTL_GET_MY_ADDR0	drv-lazurite.h	43;"	d
-IOCTL_GET_MY_ADDR1	drv-lazurite.h	45;"	d
-IOCTL_GET_MY_ADDR2	drv-lazurite.h	47;"	d
-IOCTL_GET_MY_ADDR3	drv-lazurite.h	49;"	d
+IOCTL_GET_MY_ADDR1	drv-lazurite.h	44;"	d
+IOCTL_GET_MY_ADDR2	drv-lazurite.h	45;"	d
+IOCTL_GET_MY_ADDR3	drv-lazurite.h	46;"	d
 IOCTL_GET_MY_PANID	drv-lazurite.h	39;"	d
+IOCTL_GET_MY_SHORT_ADDR	drv-lazurite.h	48;"	d
 IOCTL_GET_PWR	drv-lazurite.h	35;"	d
-IOCTL_GET_RX_NSEC0	drv-lazurite.h	73;"	d
-IOCTL_GET_RX_NSEC1	drv-lazurite.h	74;"	d
-IOCTL_GET_RX_RSSI	drv-lazurite.h	75;"	d
-IOCTL_GET_RX_SEC0	drv-lazurite.h	71;"	d
-IOCTL_GET_RX_SEC1	drv-lazurite.h	72;"	d
+IOCTL_GET_RX_NSEC0	drv-lazurite.h	71;"	d
+IOCTL_GET_RX_NSEC1	drv-lazurite.h	72;"	d
+IOCTL_GET_RX_RSSI	drv-lazurite.h	73;"	d
+IOCTL_GET_RX_SEC0	drv-lazurite.h	69;"	d
+IOCTL_GET_RX_SEC1	drv-lazurite.h	70;"	d
 IOCTL_GET_SEND_MODE	drv-lazurite.h	29;"	d
-IOCTL_GET_SENSE_TIME	drv-lazurite.h	63;"	d
-IOCTL_GET_TX_INTERVAL	drv-lazurite.h	67;"	d
-IOCTL_GET_TX_RETRY	drv-lazurite.h	65;"	d
-IOCTL_GET_TX_RSSI	drv-lazurite.h	76;"	d
-IOCTL_LED	drv-lazurite.h	79;"	d
+IOCTL_GET_SENSE_TIME	drv-lazurite.h	61;"	d
+IOCTL_GET_TX_INTERVAL	drv-lazurite.h	65;"	d
+IOCTL_GET_TX_RETRY	drv-lazurite.h	63;"	d
+IOCTL_GET_TX_RSSI	drv-lazurite.h	74;"	d
+IOCTL_LED	drv-lazurite.h	84;"	d
 IOCTL_PARAM	drv-lazurite.h	32;"	d
-IOCTL_RF	drv-lazurite.h	77;"	d
-IOCTL_SET_ADDR_TYPE	drv-lazurite.h	60;"	d
+IOCTL_RF	drv-lazurite.h	82;"	d
+IOCTL_SET_ADDR_TYPE	drv-lazurite.h	58;"	d
 IOCTL_SET_AES	drv-lazurite.h	31;"	d
 IOCTL_SET_BEGIN	drv-lazurite.h	25;"	d
 IOCTL_SET_BPS	drv-lazurite.h	38;"	d
-IOCTL_SET_CCA_WAIT	drv-lazurite.h	70;"	d
+IOCTL_SET_CCA_WAIT	drv-lazurite.h	68;"	d
 IOCTL_SET_CH	drv-lazurite.h	34;"	d
 IOCTL_SET_CLOSE	drv-lazurite.h	28;"	d
-IOCTL_SET_DRV_MODE	drv-lazurite.h	62;"	d
-IOCTL_SET_DST_ADDR0	drv-lazurite.h	52;"	d
-IOCTL_SET_DST_ADDR1	drv-lazurite.h	54;"	d
-IOCTL_SET_DST_ADDR2	drv-lazurite.h	56;"	d
-IOCTL_SET_DST_ADDR3	drv-lazurite.h	58;"	d
+IOCTL_SET_DRV_MODE	drv-lazurite.h	60;"	d
+IOCTL_SET_DST_ADDR0	drv-lazurite.h	50;"	d
+IOCTL_SET_DST_ADDR1	drv-lazurite.h	52;"	d
+IOCTL_SET_DST_ADDR2	drv-lazurite.h	54;"	d
+IOCTL_SET_DST_ADDR3	drv-lazurite.h	56;"	d
 IOCTL_SET_DST_PANID	drv-lazurite.h	42;"	d
-IOCTL_SET_MY_ADDR0	drv-lazurite.h	44;"	d
-IOCTL_SET_MY_ADDR1	drv-lazurite.h	46;"	d
-IOCTL_SET_MY_ADDR2	drv-lazurite.h	48;"	d
-IOCTL_SET_MY_ADDR3	drv-lazurite.h	50;"	d
 IOCTL_SET_MY_PANID	drv-lazurite.h	40;"	d
+IOCTL_SET_MY_SHORT_ADDR	drv-lazurite.h	47;"	d
+IOCTL_SET_PROMISCUOUS	drv-lazurite.h	75;"	d
 IOCTL_SET_PWR	drv-lazurite.h	36;"	d
 IOCTL_SET_RXOFF	drv-lazurite.h	27;"	d
 IOCTL_SET_RXON	drv-lazurite.h	26;"	d
 IOCTL_SET_SEND_MODE	drv-lazurite.h	30;"	d
-IOCTL_SET_SENSE_TIME	drv-lazurite.h	64;"	d
-IOCTL_SET_TX_INTERVAL	drv-lazurite.h	68;"	d
-IOCTL_SET_TX_RETRY	drv-lazurite.h	66;"	d
+IOCTL_SET_SENSE_TIME	drv-lazurite.h	62;"	d
+IOCTL_SET_TX_INTERVAL	drv-lazurite.h	66;"	d
+IOCTL_SET_TX_RETRY	drv-lazurite.h	64;"	d
 SUBGHZ_MAC	liblazurite.h	/^		}SUBGHZ_MAC;$/;"	t	typeref:struct:lazurite::__anon1
 SUBGHZ_MAC_PARAM	dyliblazurite.cpp	/^	} SUBGHZ_MAC_PARAM;$/;"	t	namespace:lazurite	typeref:struct:lazurite::__anon4	file:
 _DRV_802154E_H_	drv-lazurite.h	18;"	d
@@ -122,12 +121,12 @@ lazurite_send64be	dyliblazurite.cpp	/^	extern "C" int lazurite_send64be(uint8_t 
 lazurite_send64le	dyliblazurite.cpp	/^	extern "C" int lazurite_send64le(uint8_t *dst_le,const void* payload, uint16_t length)$/;"	f	namespace:lazurite
 lazurite_setAddrType	dyliblazurite.cpp	/^	extern "C" int lazurite_setAddrType(uint8_t addr_type)$/;"	f	namespace:lazurite
 lazurite_setCcaWait	dyliblazurite.cpp	/^	extern "C" int lazurite_setCcaWait(uint8_t ccawait)$/;"	f	namespace:lazurite
+lazurite_setPromiscuous	dyliblazurite.cpp	/^	extern "C" int lazurite_setPromiscuous(bool on)$/;"	f	namespace:lazurite
 lazurite_setRxAddr	dyliblazurite.cpp	/^	extern "C" int lazurite_setRxAddr(uint16_t tmp_rxaddr)$/;"	f	namespace:lazurite
 lazurite_setSenseTime	dyliblazurite.cpp	/^	extern "C" int lazurite_setSenseTime(uint8_t senseTime)$/;"	f	namespace:lazurite
 lazurite_setTxInterval	dyliblazurite.cpp	/^	extern "C" int lazurite_setTxInterval(uint16_t txinterval)$/;"	f	namespace:lazurite
 lazurite_setTxPanid	dyliblazurite.cpp	/^	extern "C" int lazurite_setTxPanid(uint16_t txpanid)$/;"	f	namespace:lazurite
 lazurite_setTxRetry	dyliblazurite.cpp	/^	extern "C" int lazurite_setTxRetry(uint8_t retry)$/;"	f	namespace:lazurite
-lazurite_test	dyliblazurite.cpp	/^	extern "C" int lazurite_test(char* payload,uint16_t *size)$/;"	f	namespace:lazurite
 lazurite_write	dyliblazurite.cpp	/^	extern "C" int lazurite_write(const char* payload, uint16_t size)$/;"	f	namespace:lazurite
 linkedAddr	dyliblazurite.cpp	/^	static uint16_t linkedAddr;$/;"	m	namespace:lazurite	file:
 mac_header	dyliblazurite.cpp	/^		u_MAC_HEADER mac_header;$/;"	m	struct:lazurite::__anon4	file:

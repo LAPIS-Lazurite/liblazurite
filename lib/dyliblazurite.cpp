@@ -1069,17 +1069,22 @@ namespace lazurite
 	}
 
 	/******************************************************************************/
-	/*! @brief test function
+	/*! @brief set promiscuous mode
+	  @param[in]     true : promiscuous mode, false: normal mode
+	  @exception      none
 	 ******************************************************************************/
-	extern "C" int lazurite_test(char* payload,uint16_t *size)
+	extern "C" int lazurite_setPromiscuous(bool on)
 	{
-		int result = 1;
-		char data[] = "Hello world\n";
-		*size = sizeof(data);
-		strncpy(payload,data,sizeof(data));
-		return result;
+		int result;
+		int errcode=0;
 
+		result = ioctl(fp,IOCTL_CMD | IOCTL_SET_PROMISCUOUS,on), errcode--;
+		if(result != 0) return errcode;
+
+
+		return 0;
 	}
+
 #ifdef __cplusplus
 };
 #endif

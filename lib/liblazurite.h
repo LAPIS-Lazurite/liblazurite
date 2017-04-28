@@ -383,6 +383,13 @@ namespace lazurite
 	 ******************************************************************************/
 	int lazurite_setCcaWait(uint8_t ccawait);
 
+	/******************************************************************************/
+	/*! @brief set promiscuous mode
+	  @param[in]     true : promiscuous mode, false: normal mode
+	  @exception      none
+	 ******************************************************************************/
+	int lazurite_setPromiscuous(bool on);
+
 #ifdef __cplusplus
 	};
 };

@@ -6,16 +6,19 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 main	sample_rx_link.cpp	/^int main(int argc, char **argv)$/;"	f
 main	sample_rx_payload.cpp	/^int main(int argc, char **argv)$/;"	f
+main	sample_rx_promiscuous.cpp	/^int main(int argc, char **argv)$/;"	f
 main	sample_rx_raw.cpp	/^int main(int argc, char **argv)$/;"	f
 main	sample_tx.cpp	/^int main(int argc, char **argv)$/;"	f
 main	sample_tx64.cpp	/^int main(int argc, char **argv)$/;"	f
 setSignal	sample_rx_link.cpp	/^int setSignal(int sigName)$/;"	f
 setSignal	sample_rx_payload.cpp	/^int setSignal(int sigName)$/;"	f
+setSignal	sample_rx_promiscuous.cpp	/^int setSignal(int sigName)$/;"	f
 setSignal	sample_rx_raw.cpp	/^int setSignal(int sigName)$/;"	f
 setSignal	sample_tx.cpp	/^int setSignal(int sigName)$/;"	f
 setSignal	sample_tx64.cpp	/^int setSignal(int sigName)$/;"	f
 sigHandle	sample_rx_link.cpp	/^void sigHandle(int sigName)$/;"	f
 sigHandle	sample_rx_payload.cpp	/^void sigHandle(int sigName)$/;"	f
+sigHandle	sample_rx_promiscuous.cpp	/^void sigHandle(int sigName)$/;"	f
 sigHandle	sample_rx_raw.cpp	/^void sigHandle(int sigName)$/;"	f
 sigHandle	sample_tx.cpp	/^void sigHandle(int sigName)$/;"	f
 sigHandle	sample_tx64.cpp	/^void sigHandle(int sigName)$/;"	f
