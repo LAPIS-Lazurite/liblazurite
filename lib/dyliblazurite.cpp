@@ -618,6 +618,20 @@ namespace lazurite
 	}
 
 	/******************************************************************************/
+	/*! @brief set my short address
+	  @param[in]      my_addr(0x0000-0xfffe) last 2byte of 64bit MAC address is in default.
+	  @param[out]     0: OK, -1:error (my_addr == 0xFFFF) 0xFFFF is reserved for broadcast
+	 ******************************************************************************/
+	extern "C" int lazurite_setMyAddress(uint16_t my_addr)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_SHORT_ADDR,my_addr), errcode--;
+		if(result != 0) return errcode;
+		return 0;
+	}
+
+	/******************************************************************************/
 	/*! @brief send data via 920MHz
 	  @param[in]     *payload     data 
 	  @param[in]      size        data of length
@@ -1077,11 +1091,22 @@ namespace lazurite
 	{
 		int result;
 		int errcode=0;
-
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_PROMISCUOUS,on), errcode--;
 		if(result != 0) return errcode;
+		return 0;
+	}
 
-
+	/******************************************************************************/
+	/*! @brief set ack request
+	  @param[in]     true : ack requested, false: force to set non-ack
+	  @exception      none
+	 ******************************************************************************/
+	extern "C" int lazurite_setAckReq(bool on)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_ACK_REQ,on), errcode--;
+		if(result != 0) return errcode;
 		return 0;
 	}
 

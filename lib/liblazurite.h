@@ -201,6 +201,12 @@ namespace lazurite
 	  @exception none
 	 ******************************************************************************/
 	long lazurite_getMyAddress(void);
+	/******************************************************************************/
+	/*! @brief set my short address
+	  @param[in]      my_addr(0x0000-0xfffe) last 2byte of 64bit MAC address is in default.
+	  @param[out]     0: OK, -1:error (my_addr == 0xFFFF) 0xFFFF is reserved for broadcast
+	 ******************************************************************************/
+	int lazurite_setMyAddress(uint16_t my_addr);
 
 	/******************************************************************************/
 	/*! @brief send data via 920MHz
@@ -389,6 +395,12 @@ namespace lazurite
 	  @exception      none
 	 ******************************************************************************/
 	int lazurite_setPromiscuous(bool on);
+	/******************************************************************************/
+	/*! @brief set ack request
+	  @param[in]     true : ack requested, false: force to set non-ack
+	  @exception      none
+	 ******************************************************************************/
+	int lazurite_setAckReq(bool on);
 
 #ifdef __cplusplus
 	};
