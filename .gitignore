@@ -1,9 +1,4 @@
-.*.swp
-.*.cmd
-*.cmd
-*.ko
-*.mod
-Module.symvers
 *.o
-modules.order
-DRV_802154.*
+*.a
+*.so
+tags
