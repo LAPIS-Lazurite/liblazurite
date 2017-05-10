@@ -302,7 +302,6 @@ namespace lazurite
 	  @exception  none
 	  @todo  must be change folder name of lazdriver
 	 ******************************************************************************/
-
 	extern "C" int lazurite_init(void)
 	{
 		int result;
@@ -311,6 +310,31 @@ namespace lazurite
 		// open device driver
 		system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko");
 		//system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=0xFFFF");
+		system("sudo chmod 777 /dev/lzgw");
+		fp = open("/dev/lzgw",O_RDWR),errcode--;
+		if(fp<0) return -1;
+
+		// initializing paramteters..
+		linkedAddr = 0xffff;
+
+		return 0;
+	}
+
+	/******************************************************************************/
+	/*! @brief initializing LazDriver as test mode
+	  @param      none
+	  @return         0=success <br> 0 < fail
+	  @exception  none
+	  @todo  must be change folder name of lazdriver
+	 ******************************************************************************/
+	extern "C" int lazurite_test(uint16_t testmode)
+	{
+		int result;
+		int errcode = 0;
+		char insmod[128];
+		// open device driver
+		sprintf(insmod,"sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=%0x%04x",testmode);
+		system(insmod);
 		system("sudo chmod 777 /dev/lzgw");
 		fp = open("/dev/lzgw",O_RDWR),errcode--;
 		if(fp<0) return -1;
@@ -611,7 +635,7 @@ namespace lazurite
 		int errcode=0;
 		uint16_t addr;
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_ADDR3,0), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_MY_SHORT_ADDR,0), errcode--;
 		if((addr = result )<0) return errcode;
 
 		return addr;
@@ -627,7 +651,7 @@ namespace lazurite
 		int result;
 		int errcode=0;
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_SHORT_ADDR,my_addr), errcode--;
-		if(result != 0) return errcode;
+		if(result != my_addr) return errcode;
 		return 0;
 	}
 
@@ -1109,7 +1133,19 @@ namespace lazurite
 		if(result != 0) return errcode;
 		return 0;
 	}
-
+	/******************************************************************************/
+	/*! @brief set broadcast
+	  @param[in]     true : enable to receive broadcast, false: ignore to receive broadcast
+	  @exception      none
+	 ******************************************************************************/
+	extern "C" int lazurite_setBroadcastEnb(bool on)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_BROADCAST,on), errcode--;
+		if(result != 0) return errcode;
+		return 0;
+	}
 #ifdef __cplusplus
 };
 #endif
