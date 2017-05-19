@@ -1146,6 +1146,19 @@ namespace lazurite
 		if(result != 0) return errcode;
 		return 0;
 	}
+	/******************************************************************************/
+	/*! @brief set AES Key 
+	  @param[in]     set pointer of 128bit AES key
+	  @exception      none
+	 ******************************************************************************/
+	extern "C" int lazurite_setKey(uint8_t *key)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_AES,key), errcode--;
+		if(result != 0) return errcode;
+		return 0;
+	}
 #ifdef __cplusplus
 };
 #endif
