@@ -54,6 +54,7 @@ int main(int argc, char **argv)
 	uint8_t ch=36;
 	uint8_t rate=100;
 	uint8_t pwr=20;
+	uint8_t mode=0x00;
 	uint16_t panid=0xabcd;
 	uint8_t myaddr[8];
 

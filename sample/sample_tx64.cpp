@@ -57,6 +57,7 @@ int main(int argc, char **argv)
 	uint8_t dst_addr[8]={0x00,0x1d,0x12,0x90,0x00,0x04,0x3F,0xC0};
 	uint8_t rate = 100;
 	uint8_t pwr  = 20;
+	uint8_t mode  = 0x00;
 	char payload[250] = {"hello world\n"};
 
 	// set Signal Trap

@@ -54,9 +54,10 @@ int main(int argc, char **argv)
 	char* en;
 	uint8_t ch=36;
 	uint16_t panid=0xabcd;
-	uint16_t txaddr=0x3FC0;
+	uint16_t txaddr=0xffff;
 	uint8_t rate = 100;
 	uint8_t pwr  = 20;
+	uint8_t mode  = 0x00;
 	char payload[250] = {"hello world\n"};
 
 	// set Signal Trap
@@ -86,6 +87,9 @@ int main(int argc, char **argv)
 	if(argc>6) {
 		strncpy(payload,argv[6],sizeof(payload));
 	}
+
+    lazurite_setDsssMode(mode);
+    lazurite_setDsssSize(0);
 
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) 

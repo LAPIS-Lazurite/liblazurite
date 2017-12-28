@@ -122,6 +122,13 @@ namespace lazurite
 		  @param[in] pwr 1 or 20<br>
 		  1  = 1mW<br>
 		  20 = 20mW
+          @param[in] mode 0x00,0x10,0x11,0x12,0x13,0x20
+          0x00 = FSK
+          0x10 = DSSS SF=16
+          0x11 = DSSS SF=32
+          0x12 = DSSS SF=64
+          0x13 = DSSS SF=8
+          0x20 = SIGFOX
 		  @return         0=success <br> 0 < fail
 		  @exception  none
 		 ******************************************************************************/
@@ -415,6 +422,26 @@ namespace lazurite
 		@exception      none
 		******************************************************************************/
 		int lazurite_setKey(char *key);
+
+        /******************************************************************************/
+        /*! @brief set DSSS Mode 
+          @param[in] mode 0x00,0x10,0x11,0x12,0x13,0x20
+          0x00 = FSK
+          0x10 = DSSS SF=16
+          0x11 = DSSS SF=32
+          0x12 = DSSS SF=64
+          0x13 = DSSS SF=8
+          0x20 = SIGFOX
+          @exception      none
+         ******************************************************************************/
+        int lazurite_setDsssMode(uint8_t mode);
+        /******************************************************************************/
+        /*! @brief set DSSS Size
+          @param[in]     set DSSS size
+          @exception     none
+         ******************************************************************************/
+        int lazurite_setDsssSize(uint8_t size);
+
 #ifdef __cplusplus
 	};
 };

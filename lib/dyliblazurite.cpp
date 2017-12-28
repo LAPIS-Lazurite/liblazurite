@@ -1159,6 +1159,38 @@ namespace lazurite
 		if(result != 0) return errcode;
 		return 0;
 	}
+	/******************************************************************************/
+	/*! @brief set DSSS Mode 
+	  @param[in] mode 0x00,0x10,0x11,0x12,0x13,0x20
+	  0x00 = FSK
+	  0x10 = DSSS SF=16
+	  0x11 = DSSS SF=32
+	  0x12 = DSSS SF=64
+	  0x13 = DSSS SF=8
+	  0x20 = SIGFOX
+	  @exception      none
+	 ******************************************************************************/
+	extern "C" int lazurite_setDsssMode(uint8_t mode)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DSSS_MODE,mode), errcode--;
+		if(result != 0) return errcode;
+		return 0;
+	}
+	/******************************************************************************/
+	/*! @brief set DSSS Size
+	  @param[in]     set DSSS size
+	  @exception     none
+	 ******************************************************************************/
+	extern "C" int lazurite_setDsssSize(uint8_t size)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DSSS_SIZE,size), errcode--;
+		if(result != 0) return errcode;
+		return 0;
+	}
 #ifdef __cplusplus
 };
 #endif
