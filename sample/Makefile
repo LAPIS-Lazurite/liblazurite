@@ -1,4 +1,7 @@
-All: tx64 tx raw rx link  promiscuous
+All: ota tx64 tx raw rx link  promiscuous
+
+ota:
+	g++ -I./ -o sample_ota_service sample_ota_service.cpp -L/usr/lib -llazurite -lrt
 
 tx:
 	g++ -I./ -o sample_tx sample_tx.cpp -L/usr/lib -llazurite
@@ -19,4 +22,4 @@ promiscuous:
 	g++ -I./ -o sample_rx_promiscuous sample_rx_promiscuous.cpp -L/usr/lib -llazurite
 
 clean:
-	rm sample_tx sample_rx_raw sample_rx_payload sample_rx_link sample_tx64 sample_rx_promiscuous
+	rm ota_service sample_tx sample_rx_raw sample_rx_payload sample_rx_link sample_tx64 sample_rx_promiscuous
