@@ -26,13 +26,16 @@
 
 //#define MANUAL_MODE		// uncomment, if manual mode
 
+#define _SIGNATURE_SIZE				( 3 )
+#define _PROGRAM_DATA_SIZE			( 128 )
+#define _MAX_NAME_SIZE				( 16 )
 #define _FILE_SIZE					( 0x10000 )
 #define _BUILT_IN_KEYWORD_OFFSET	( 0x68 )
 #define _HW_TYPE_OFFSET				( 0x68+4 )
 #define _USER_PRGM_START			( 0x400 )
 #define _USER_PRGM_END				( 0x6400-2 )
 #define _DATA_REQ_EXPIRE_COUNT		( 10 )			// 10s
-#define _REP_START_REQ_SIZE			( 7 )
+#define _REP_START_REQ_SIZE			( 23 )			// 3+1+1+16+2
 
 using namespace lazurite;
 
@@ -54,11 +57,12 @@ void _data_req_timer_start(void);
 void _data_req_timer_stop(void);
 
 typedef struct {
-	uint8_t sig[3];
+	uint8_t sig[_SIGNATURE_SIZE];
 	uint8_t hw_type;
 	uint8_t ver;
+	uint8_t name[_MAX_NAME_SIZE];
 	uint16_t addr;
-	uint8_t bin[128];
+	uint8_t bin[_PROGRAM_DATA_SIZE];
 } __attribute__((__packed__)) TRX_DATA;
 
 TRX_DATA trx_data;
@@ -141,8 +145,12 @@ int main(int argc, char **argv)
 	} else {
 		// do nothing
 	}
+
+//	_prgm_name = _get_prgm_name();
+//	printf("info : program name = %s\n",_prgm_name);
+
 	_end_addr = _calc_end_addr();
-	printf("info : end program addr = 0x%04x\n",_end_addr);
+	printf("info : end program addr = 0x%04X\n",_end_addr);
 
 	timespec rxTime;
 
@@ -166,7 +174,7 @@ int main(int argc, char **argv)
 	if(argc>6) {
 		pwr = strtol(argv[6],&en,0);
 	}
-	printf("info : short address = %04x\n",lazurite_getMyAddress());
+	printf("info : host address = 0x%04X\n",lazurite_getMyAddress());
 
 	result = lazurite_setKey(key);
 	if(result < 0) {
@@ -185,7 +193,11 @@ int main(int argc, char **argv)
 		printf("err  : lazurite_rxEnable fail = %d\n",result);
 		return EXIT_FAILURE;
 	}
+#ifdef MANUAL_MODE
 	printf("info : ctlr-c to break, or manual command mode.\n");
+#else
+	printf("info : ctlr-c to break.\n");
+#endif
 
 	//
 	// wait for rx
@@ -201,11 +213,12 @@ int main(int argc, char **argv)
 		if(result > 0 ) {
 			lazurite_decMac(&mac,raw,size);
 			src_addr = mac.src_addr[0] | mac.src_addr[1]<<8;
-//			printf("RX   : 0x%04x\n",src_addr);
+//for(int i=0;i<size;i++) printf("%02X ",raw[i]);
+//printf("\n");
 			memcpy(&trx_data,raw+mac.payload_offset,mac.payload_len);
 			if (trx_data.hw_type == _hw_type) {
 				if (strncmp((char*)trx_data.sig,"$R0",3)==0) {
-					printf("RX   : 0x%04X hw_type = %02x\n",src_addr,trx_data.hw_type);
+					printf("RX   : 0x%04X hw_type = %02X\n",src_addr,trx_data.hw_type);
 #ifndef MANUAL_MODE
 					_reply_start_request(panid, src_addr);
 #endif
@@ -242,7 +255,11 @@ int main(int argc, char **argv)
 		}
 		if (bStop) {
 			bStop=false;
-			printf("input: q(quit),t(trigger),s [addr](start req),d(data req),c(clear node info)\n");
+#ifdef MANUAL_MODE
+			printf("input: q(quit),t(trigger),s/s_addr(start req),d(data req),c(clear active node)\n");
+#else
+			printf("input: q(quit),t(trigger)\n");
+#endif
 			fgets(tmp,100,stdin);
 			c = strtok(tmp," ");
 			if (*c=='q') {
@@ -288,10 +305,10 @@ void _reply_start_request(uint16_t panid, uint16_t src_addr)
 	if (src_addr == 0) return;
 	if ((_active_node_addr == 0xffff) || (_active_node_addr == src_addr)) {
 		strncpy((char*)trx_data.sig,"$A0",3);	// active ok
-		printf("TX   : active ok 0x%04x.\n",src_addr);
+		printf("TX   : active ok 0x%04X.\n",src_addr);
 	} else {
 		strncpy((char*)trx_data.sig,"$A1",3);	// passive ok
-		printf("TX   : passive ok 0x%04x.\n",src_addr);
+		printf("TX   : passive ok 0x%04X.\n",src_addr);
 	}
 	trx_data.ver = _file_ver;
 	trx_data.addr = _end_addr;
@@ -314,7 +331,9 @@ void _reply_data_request(uint16_t panid, uint16_t src_addr)
 		(_active_node_addr != 0xffff) && (_active_node_addr == src_addr) && \
 		(trx_data.hw_type == _hw_type) && (trx_data.ver == _file_ver)) {
 		strncpy((char*)trx_data.sig,"$A2",3);
-		memcpy(&trx_data.bin,&_file_buf[data_addr],128);
+		memcpy(&trx_data.bin,&_file_buf[data_addr],_PROGRAM_DATA_SIZE);
+//for(int i=0;i<_PROGRAM_DATA_SIZE;i++) printf("%02X ",trx_data.bin[i]);
+//printf("\n");
 		result = lazurite_send(panid,0xffff,(uint8_t *)&trx_data,sizeof(trx_data));	// group cast
 		printf("TX   : program data.\n");
 		_timer_count=_DATA_REQ_EXPIRE_COUNT;			// timer reload
@@ -354,7 +373,7 @@ int _read_file(uint8_t *path)
 				result = -3;
 			} else {
 				_hw_type = _file_buf[_HW_TYPE_OFFSET];
-				printf("info : built-in hw_type = 0x%x\n",_hw_type);
+				printf("info : built-in hw_type = 0x%02X\n",_hw_type);
 			}
 		}
 	}
