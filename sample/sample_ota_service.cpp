@@ -27,8 +27,8 @@
 //#define MANUAL_MODE		// uncomment, if manual mode
 
 #define _SIGNATURE_SIZE				( 3 )
-#define _PROGRAM_DATA_SIZE			( 128 )
-#define _MAX_NAME_SIZE				( 16 )
+#define _PRGM_DATA_SIZE				( 128 )
+#define _PRGM_NAME_SIZE				( 16 )
 #define _FILE_SIZE					( 0x10000 )
 #define _BUILT_IN_KEYWORD_OFFSET	( 0x68 )
 #define _HW_TYPE_OFFSET				( 0x68+4 )
@@ -36,6 +36,12 @@
 #define _USER_PRGM_END				( 0x6400-2 )
 #define _DATA_REQ_EXPIRE_COUNT		( 10 )			// 10s
 #define _REP_START_REQ_SIZE			( 23 )			// 3+1+1+16+2
+#define _SIG_START_REQ				"$R0"
+#define _SIG_DATA_REQ				"$R1"
+#define _SIG_ACTIVE_OK				"$A0"
+#define _SIG_PASSIVE_OK				"$A1"
+#define _SIG_PRGM_DATA				"$A2"
+
 
 using namespace lazurite;
 
@@ -46,9 +52,9 @@ using namespace lazurite;
  * -------------------------------------------------------------------------------- */
 char key[] = "b64b729a3c362a2aee0063212f9bd317";
 
-bool bStop;
 int _read_file(uint8_t *path);
 uint16_t _calc_end_addr(void);
+void _parse_name_ver(char *path, uint8_t *name, uint8_t *ver);
 void _reply_start_request(uint16_t panid, uint16_t addr);
 void _reply_data_request(uint16_t panid, uint16_t addr);
 void _begin_update(uint16_t panid);
@@ -60,16 +66,18 @@ typedef struct {
 	uint8_t sig[_SIGNATURE_SIZE];
 	uint8_t hw_type;
 	uint8_t ver;
-	uint8_t name[_MAX_NAME_SIZE];
+	uint8_t name[_PRGM_NAME_SIZE];
 	uint16_t addr;
-	uint8_t bin[_PROGRAM_DATA_SIZE];
+	uint8_t bin[_PRGM_DATA_SIZE];
 } __attribute__((__packed__)) TRX_DATA;
 
 TRX_DATA trx_data;
 
+bool bStop;
 uint8_t _file_buf[_FILE_SIZE];
-uint8_t _file_ver=1;
 uint8_t _hw_type=0;
+uint8_t _prgm_ver;
+uint8_t _prgm_name[_PRGM_NAME_SIZE];
 uint16_t _end_addr=_USER_PRGM_END;
 uint16_t _active_node_addr=0xffff;
 int _timer_count=_DATA_REQ_EXPIRE_COUNT;
@@ -146,11 +154,12 @@ int main(int argc, char **argv)
 		// do nothing
 	}
 
-//	_prgm_name = _get_prgm_name();
-//	printf("info : program name = %s\n",_prgm_name);
+	_parse_name_ver((char*)fpath, _prgm_name, &_prgm_ver);
+	printf("info : program version = %d\n",_prgm_ver);
+	printf("info : program name = %s\n",_prgm_name);
 
 	_end_addr = _calc_end_addr();
-	printf("info : end program addr = 0x%04X\n",_end_addr);
+	printf("info : end program address = 0x%04X\n",_end_addr);
 
 	timespec rxTime;
 
@@ -160,7 +169,7 @@ int main(int argc, char **argv)
 	}
 	bStop = false;
 	if(argc>2) {
-		_file_ver = strtol(argv[2],&en,0);
+		_prgm_ver = strtol(argv[2],&en,0);
 	}
 	if(argc>3) {
 		ch = strtol(argv[3],&en,0);
@@ -194,9 +203,9 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 #ifdef MANUAL_MODE
-	printf("info : ctlr-c to break, or manual command mode.\n");
+	printf("info : <ctlr-c> to break, or manual command mode.\n");
 #else
-	printf("info : ctlr-c to break.\n");
+	printf("info : <ctlr-c> to break.\n");
 #endif
 
 	//
@@ -216,14 +225,14 @@ int main(int argc, char **argv)
 //for(int i=0;i<size;i++) printf("%02X ",raw[i]);
 //printf("\n");
 			memcpy(&trx_data,raw+mac.payload_offset,mac.payload_len);
-			if (trx_data.hw_type == _hw_type) {
-				if (strncmp((char*)trx_data.sig,"$R0",3)==0) {
-					printf("RX   : 0x%04X hw_type = %02X\n",src_addr,trx_data.hw_type);
+			if ((trx_data.hw_type == _hw_type) && (memcmp(trx_data.name,_prgm_name,_PRGM_NAME_SIZE) == 0)) {
+				if (strncmp((char*)trx_data.sig,_SIG_START_REQ,_SIGNATURE_SIZE) == 0) {
+					printf("RX   : 0x%04X  hw_type = %02X (start request)\n",src_addr,trx_data.hw_type);
 #ifndef MANUAL_MODE
 					_reply_start_request(panid, src_addr);
 #endif
-				} else if (strncmp((char*)trx_data.sig,"$R1",3)==0) {
-					printf("RX   : 0x%04X addr = %04X\n",src_addr,trx_data.addr);
+				} else if (strncmp((char*)trx_data.sig,_SIG_DATA_REQ,_SIGNATURE_SIZE) == 0) {
+					printf("RX   : 0x%04X  addr = 0x%04X (data request)\n",src_addr,trx_data.addr);
 #ifndef MANUAL_MODE
 					usleep(10000);
 					_reply_data_request(panid, src_addr);
@@ -255,11 +264,7 @@ int main(int argc, char **argv)
 		}
 		if (bStop) {
 			bStop=false;
-#ifdef MANUAL_MODE
-			printf("input: q(quit),t(trigger),s/s_addr(start req),d(data req),c(clear active node)\n");
-#else
-			printf("input: q(quit),t(trigger)\n");
-#endif
+			printf("input: q(quit),t(trigger),a addr(active ok),p addr(passive ok),s(send data),c(clear active node)\n");
 			fgets(tmp,100,stdin);
 			c = strtok(tmp," ");
 			if (*c=='q') {
@@ -267,15 +272,13 @@ int main(int argc, char **argv)
 			} else if (*c=='t') {
 				_begin_update(panid);
 				continue;
-			} else if (*c=='s') {
+			} else if ((*c=='a') || (*c=='p')) {
 				c = strtok(NULL, " ");
 				if (c) {
 					_reply_start_request(panid, strtol(c,0,0));
-				} else {
-					_reply_start_request(panid, src_addr);
 				}
 				continue;
-			} else if (*c=='d') {
+			} else if (*c=='s') {
 				_reply_data_request(panid, src_addr);
 				continue;
 			} else if (*c=='c') {
@@ -304,13 +307,14 @@ void _reply_start_request(uint16_t panid, uint16_t src_addr)
 
 	if (src_addr == 0) return;
 	if ((_active_node_addr == 0xffff) || (_active_node_addr == src_addr)) {
-		strncpy((char*)trx_data.sig,"$A0",3);	// active ok
-		printf("TX   : active ok 0x%04X.\n",src_addr);
+		strncpy((char*)trx_data.sig,_SIG_ACTIVE_OK,_SIGNATURE_SIZE);	// active ok
+		printf("TX   : active ok to 0x%04X.\n",src_addr);
 	} else {
-		strncpy((char*)trx_data.sig,"$A1",3);	// passive ok
-		printf("TX   : passive ok 0x%04X.\n",src_addr);
+		strncpy((char*)trx_data.sig,_SIG_PASSIVE_OK,_SIGNATURE_SIZE);	// passive ok
+		printf("TX   : passive ok to 0x%04X.\n",src_addr);
 	}
-	trx_data.ver = _file_ver;
+	trx_data.ver = _prgm_ver;
+	memcpy(trx_data.name,_prgm_name,_PRGM_NAME_SIZE);
 	trx_data.addr = _end_addr;
 	result = lazurite_send(panid,src_addr,(uint8_t *)&trx_data,_REP_START_REQ_SIZE);
 	if ((_active_node_addr == 0xffff) && (result >= 0)) {
@@ -329,13 +333,14 @@ void _reply_data_request(uint16_t panid, uint16_t src_addr)
 	if (src_addr == 0) return;
 	if ((data_addr >= _USER_PRGM_START) && (data_addr <= _USER_PRGM_END) && \
 		(_active_node_addr != 0xffff) && (_active_node_addr == src_addr) && \
-		(trx_data.hw_type == _hw_type) && (trx_data.ver == _file_ver)) {
-		strncpy((char*)trx_data.sig,"$A2",3);
-		memcpy(&trx_data.bin,&_file_buf[data_addr],_PROGRAM_DATA_SIZE);
-//for(int i=0;i<_PROGRAM_DATA_SIZE;i++) printf("%02X ",trx_data.bin[i]);
+		(trx_data.hw_type == _hw_type) && (trx_data.ver == _prgm_ver)) {
+		strncpy((char*)trx_data.sig,_SIG_PRGM_DATA,_SIGNATURE_SIZE);	// program data
+		memcpy(trx_data.name,_prgm_name,_PRGM_NAME_SIZE);
+		memcpy(&trx_data.bin,&_file_buf[data_addr],_PRGM_DATA_SIZE);
+//for(int i=0;i<_PRGM_DATA_SIZE;i++) printf("%02X ",trx_data.bin[i]);
 //printf("\n");
 		result = lazurite_send(panid,0xffff,(uint8_t *)&trx_data,sizeof(trx_data));	// group cast
-		printf("TX   : program data.\n");
+		printf("TX   : program addr = 0x%04X (send data)\n",data_addr);
 		_timer_count=_DATA_REQ_EXPIRE_COUNT;			// timer reload
 		if (data_addr >= _end_addr) {
 			_active_node_addr = 0xffff;
@@ -373,13 +378,22 @@ int _read_file(uint8_t *path)
 				result = -3;
 			} else {
 				_hw_type = _file_buf[_HW_TYPE_OFFSET];
-				printf("info : built-in hw_type = 0x%02X\n",_hw_type);
+				printf("info : hw_type = 0x%02X\n",_hw_type);
 			}
 		}
 	}
 	return result;
 }
- 
+
+void _parse_name_ver(char *path, uint8_t *name, uint8_t *ver)
+{
+	char *p;
+	p = strtok(path, "$");
+	strncpy((char*)name, p, _PRGM_NAME_SIZE);
+	p = strtok(NULL, ".");
+	*ver = (uint8_t)strtol(p,0,10);
+}
+
 uint16_t _calc_end_addr(void)
 {
 	int i;
