@@ -52,10 +52,12 @@ int main(int argc, char **argv)
 	int result;
 	char* en;
 	uint8_t ch=36;
+	uint16_t panid=0xabcd;
+	uint16_t txaddr=0x1234;
 	uint8_t rate=100;
 	uint8_t pwr=20;
 	uint8_t mode=0x00;
-	uint16_t panid=0xabcd;
+	uint8_t len=0;
 	uint8_t myaddr[8];
 
 	// set Signal Trap
@@ -68,6 +70,8 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+	printf("argment sample: <command> 24 0xabcd 0x1234 200 20 0x13\n");
+
 	bStop = false;
 	if(argc>1) {
 		ch = strtol(argv[1],&en,0);
@@ -76,11 +80,26 @@ int main(int argc, char **argv)
 		panid = strtol(argv[2],&en,0);
 	}
 	if(argc>3) {
-		rate = strtol(argv[3],&en,0);
+		txaddr = strtol(argv[3],&en,0);
 	}
 	if(argc>4) {
-		pwr = strtol(argv[4],&en,0);
+		rate = strtol(argv[4],&en,0);
 	}
+	if(argc>5) {
+		pwr = strtol(argv[5],&en,0);
+	}
+	if(argc>6) {
+		mode = strtol(argv[6],&en,0);
+	}
+	if(argc>7) {
+		len = strtol(argv[7],&en,0);
+	}
+
+	printf("payload size: %d\n",len);
+    lazurite_setModulation(mode);
+    lazurite_setDsssSize(len,0);
+    lazurite_setDsssSpreadFactor(64);
+
 	result = lazurite_getMyAddr64(myaddr);
 	printf("myaddress=0x%04x\n",myaddr);
 	

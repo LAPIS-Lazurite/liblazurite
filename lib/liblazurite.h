@@ -434,13 +434,20 @@ namespace lazurite
           0x20 = SIGFOX
           @exception      none
          ******************************************************************************/
-        int lazurite_setDsssMode(uint8_t mode);
+        int lazurite_setModulation(uint8_t mode);
         /******************************************************************************/
         /*! @brief set DSSS Size
           @param[in]     set DSSS size
           @exception     none
          ******************************************************************************/
-        int lazurite_setDsssSize(uint8_t size);
+        int lazurite_setDsssSize(uint8_t size,uint8_t addr_mode);
+        /******************************************************************************/
+        /*! @brief set spread factor for DSSS
+          @param[in]     set spread factor
+          @exception     none
+         ******************************************************************************/
+        int lazurite_setDsssSpreadFactor(uint8_t sf);
+
 
 #ifdef __cplusplus
 	};

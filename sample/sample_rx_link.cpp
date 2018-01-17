@@ -51,11 +51,12 @@ int main(int argc, char **argv)
 	int result;
 	char* en;
 	uint8_t ch=36;
+	uint16_t panid=0xabcd;
+	uint16_t linkedAddr=0xffff;
 	uint8_t rate=100;
 	uint8_t pwr=20;
 	uint8_t mode=0x00;
-	uint16_t panid=0xabcd;
-	uint16_t linkedAddr=0xffff;
+	uint8_t len=16;
 
 	// set Signal Trap
 	setSignal(SIGINT);
@@ -66,6 +67,8 @@ int main(int argc, char **argv)
 		printf("liblzgw_open fail = %d\n",result);
 		return EXIT_FAILURE;
 	}
+
+	printf("argment sample: <command> 24 0xabcd 0x1234 200 20 0x10 16\n");
 
 	bStop = false;
 	if(argc>1) {
@@ -83,6 +86,18 @@ int main(int argc, char **argv)
 	if(argc>5) {
 		pwr = strtol(argv[5],&en,0);
 	}
+	if(argc>6) {
+		mode = strtol(argv[6],&en,0);
+	}
+	if(argc>7) {
+		len = strtol(argv[7],&en,0);
+	}
+
+	printf("payload size: %d\n",len);
+    lazurite_setModulation(mode);
+    lazurite_setDsssSize(len,0);
+    lazurite_setDsssSpreadFactor(64);
+
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) {
 		printf("lazurite_begin fail = %d\n",result);

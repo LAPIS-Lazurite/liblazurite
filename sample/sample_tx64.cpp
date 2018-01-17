@@ -52,13 +52,15 @@ int main(int argc, char **argv)
 {
 	int result;
 	char* en;
-	uint8_t ch=36;
+	uint8_t ch=24;
 	uint16_t panid=0xabcd;
 	uint8_t dst_addr[8]={0x00,0x1d,0x12,0x90,0x00,0x04,0x3F,0xC0};
+	uint16_t txaddr=0xffff;
 	uint8_t rate = 100;
 	uint8_t pwr  = 20;
 	uint8_t mode  = 0x00;
-	char payload[250] = {"hello world\n"};
+	char payload[] = {"hello world\n"};
+	uint16_t len  = strlen(payload);
 
 	// set Signal Trap
 	setSignal(SIGINT);
@@ -67,6 +69,8 @@ int main(int argc, char **argv)
 		printf("lazurite_init fail = %d\n",result);
 		return EXIT_FAILURE;
 	}
+
+	printf("argment sample: <command> 24 0xabcd 0x1234 200 20 0x10\n");
 
 	bStop = false;
 	printf("argc=%d",argc);
@@ -77,7 +81,7 @@ int main(int argc, char **argv)
 		panid = strtol(argv[2],&en,0);
 	}
 	if(argc>3) {
-		//dst_addr = strtol(argv[3],&en,0);
+		txaddr = strtol(argv[3],&en,0);
 	}
 	if(argc>4) {
 		rate = strtol(argv[4],&en,0);
@@ -86,8 +90,13 @@ int main(int argc, char **argv)
 		pwr = strtol(argv[5],&en,0);
 	}
 	if(argc>6) {
-		strncpy(payload,argv[6],sizeof(payload));
+		mode = strtol(argv[6],&en,0);
 	}
+
+	printf("payload size: %d\n",len);
+    lazurite_setModulation(mode);
+    lazurite_setDsssSize(len,1);
+    lazurite_setDsssSpreadFactor(64);
 
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) 

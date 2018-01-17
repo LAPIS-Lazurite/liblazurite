@@ -52,13 +52,14 @@ int main(int argc, char **argv)
 {
 	int result;
 	char* en;
-	uint8_t ch=36;
+	uint8_t ch=24;
 	uint16_t panid=0xabcd;
 	uint16_t txaddr=0xffff;
 	uint8_t rate = 100;
 	uint8_t pwr  = 20;
 	uint8_t mode  = 0x00;
-	char payload[250] = {"hello world\n"};
+	char payload[] = {"hello world!!!!\n"};
+	uint16_t len  = strlen(payload);
 
 	// set Signal Trap
 	setSignal(SIGINT);
@@ -68,7 +69,10 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+	printf("argment sample: <command> 24 0xabcd 0x1234 200 20 0x10\n");
+
 	bStop = false;
+	printf("argc=%d",argc);
 	if(argc>1) {
 		ch = strtol(argv[1],&en,0);
 	}
@@ -85,11 +89,13 @@ int main(int argc, char **argv)
 		pwr = strtol(argv[5],&en,0);
 	}
 	if(argc>6) {
-		strncpy(payload,argv[6],sizeof(payload));
+		mode = strtol(argv[6],&en,0);
 	}
 
-    lazurite_setDsssMode(mode);
-    lazurite_setDsssSize(0);
+	printf("payload size: %d\n",len);
+    lazurite_setModulation(mode);
+    lazurite_setDsssSize(len,0);
+    lazurite_setDsssSpreadFactor(64);
 
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) 

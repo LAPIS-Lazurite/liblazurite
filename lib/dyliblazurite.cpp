@@ -1170,7 +1170,7 @@ namespace lazurite
 	  0x20 = SIGFOX
 	  @exception      none
 	 ******************************************************************************/
-	extern "C" int lazurite_setDsssMode(uint8_t mode)
+	extern "C" int lazurite_setModulation(uint8_t mode)
 	{
 		int result;
 		int errcode=0;
@@ -1183,11 +1183,24 @@ namespace lazurite
 	  @param[in]     set DSSS size
 	  @exception     none
 	 ******************************************************************************/
-	extern "C" int lazurite_setDsssSize(uint8_t size)
+	extern "C" int lazurite_setDsssSize(uint8_t size, uint8_t addr_mode)
 	{
 		int result;
 		int errcode=0;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DSSS_SIZE,size), errcode--;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DSSS_SIZE,size,addr_mode), errcode--;
+		if(result != 0) return errcode;
+		return 0;
+	}
+	/******************************************************************************/
+    /*! @brief set spread factor for DSSS
+      @param[in]     set spread factor
+      @exception     none
+	 ******************************************************************************/
+    extern "C" int lazurite_setDsssSpreadFactor(uint8_t sf)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DSSS_SF,sf), errcode--;
 		if(result != 0) return errcode;
 		return 0;
 	}
