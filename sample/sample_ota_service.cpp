@@ -30,10 +30,10 @@
 #define _PRGM_DATA_SIZE				( 128 )
 #define _PRGM_NAME_SIZE				( 16 )
 #define _FILE_SIZE					( 0x10000 )
-#define _BUILT_IN_KEYWORD_OFFSET	( 0x68 )
-#define _HW_TYPE_OFFSET				( 0x68+4 )
+#define _BUILT_IN_KEYWORD_OFFSET	( 0xA )
+#define _HW_TYPE_OFFSET				( 0xA+4 )
 #define _USER_PRGM_START			( 0x400 )
-#define _USER_PRGM_END				( 0x6400-2 )
+#define _USER_PRGM_END				( 0x8000-2 )
 #define _DATA_REQ_EXPIRE_COUNT		( 10 )			// 10s
 #define _REP_START_REQ_SIZE			( 23 )			// 3+1+1+16+2
 #define _SIG_START_REQ				"$R0"
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
 			_data_req_timer_start();
 			_timer_count=_DATA_REQ_EXPIRE_COUNT;		// timer reset
 			_timer_running = true;
-			printf("timer: start.\n");
+			printf("timer: 10s count down start.\n");
 		}
 		if (_timer_stop || (_timer_count <= 0)) {
 			_timer_stop = false;
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
 			_data_req_timer_stop();
 			_timer_count=_DATA_REQ_EXPIRE_COUNT;		// timer reset
 			_timer_running = false;
-			printf("timer: stop.\n");
+			printf("timer: count down stop.\n");
 		}
 		if (bStop) {
 			bStop=false;
@@ -407,7 +407,7 @@ uint16_t _calc_end_addr(void)
 void _timer_handler(int signum)
 {
 	_timer_count--;
-	printf("timer: count %d\n", _timer_count);
+	if (_timer_count <= 5) printf("timer: count %d\n", _timer_count);
 }
 
 void _data_req_timer_start(void)
