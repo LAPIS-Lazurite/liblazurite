@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include "../lib/liblazurite.h"
 #include <time.h>
+#include <errno.h>
 
 
 using namespace std;
@@ -99,7 +100,7 @@ int main(int argc, char **argv)
 	{
 		if((result=lazurite_send(panid,txaddr,payload,strlen(payload))) <0 ) 
 		{
-			printf("tx error = %d\n",result);
+			printf("tx error = %s\n",strerror(result*-1));
 		}
 		usleep(10*1000);
 	}

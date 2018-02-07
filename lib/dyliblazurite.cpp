@@ -59,6 +59,7 @@
 #include "drv-lazurite.h"
 #include "liblazurite.h"
 #include <unistd.h> 
+#include <errno.h> 
 
 #ifdef __cplusplus
 /*! @class lazurite
@@ -480,6 +481,7 @@ namespace lazurite
 		if(result != uaddr.a16[3]) return errcode;
 
 		result = write(fp,payload,length);
+		if(result < 0) result = errno*-1;
 		return result;
 	}
 
@@ -518,6 +520,7 @@ namespace lazurite
 		if(result != uaddr.a16[3]) return errcode;
 
 		result = write(fp,payload,length);
+		if(result < 0) result = errno*-1;
 		return result;
 	}
 
@@ -544,6 +547,7 @@ namespace lazurite
 		if(result != rxaddr) return errcode;
 
 		result = write(fp,payload,length);
+		if(result < 0) result = errno*-1;
 		return result;
 	}
 
