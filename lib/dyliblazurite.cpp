@@ -333,7 +333,7 @@ namespace lazurite
 		int errcode = 0;
 		char insmod[128];
 		// open device driver
-		sprintf(insmod,"sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=%0x%04x",testmode);
+		sprintf(insmod,"sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=0x%04x",testmode);
 		system(insmod);
 		system("sudo chmod 777 /dev/lzgw");
 		fp = open("/dev/lzgw",O_RDWR),errcode--;
