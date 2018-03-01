@@ -1163,9 +1163,44 @@ namespace lazurite
 		if(result != 0) return errcode;
 		return 0;
 	}
+
+	/******************************************************************************/
+	/*! @brief set enhance ACK
+	  @param[in]     set pointer of enhance ACK data
+	  @param[in]     set size of enhance ACK data
+	  @exception      none
+	 ******************************************************************************/
+	extern "C" int lazurite_setEnhanceAck(uint8_t *data, uint16_t size)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_EACK_ENB,0), errcode--;
+		if(result < 0) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_EACK_LEN,size), errcode--;
+		if(result < 0) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_EACK_DATA,data), errcode--;
+		if(result < 0) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_EACK_ENB,1), errcode--;
+		if(result < 0) return errcode;
+		return 0;
+	}
+
+	/******************************************************************************/
+	/*! @brief get enhance ACK
+	  @param[out]     set pointer's pointer of enhance ACK data
+	  @param[out]     set pointer of enhance ACK size
+	  @exception      none
+	 ******************************************************************************/
+	extern "C" int lazurite_getEnhanceAck(uint8_t **data, uint16_t *size)
+	{
+		int result;
+		int errcode=0;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_EACK,data), errcode--;
+		if(result < 0) return errcode;
+		*size = result;
+		return result;
+	}
 #ifdef __cplusplus
 };
 #endif
-
-
 
