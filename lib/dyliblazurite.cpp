@@ -1191,7 +1191,7 @@ namespace lazurite
 	  @param[out]     set pointer of enhance ACK size
 	  @exception      none
 	 ******************************************************************************/
-	extern "C" int lazurite_getEnhanceAck(uint8_t **data, uint16_t *size)
+	extern "C" int lazurite_getEnhanceAck(char* data, uint16_t* size)
 	{
 		int result;
 		int errcode=0;
