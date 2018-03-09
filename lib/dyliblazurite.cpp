@@ -1198,7 +1198,7 @@ namespace lazurite
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_GET_EACK,data), errcode--;
 		if(result < 0) return errcode;
 		*size = result;
-		return result;
+		return 0;
 	}
 #ifdef __cplusplus
 };
