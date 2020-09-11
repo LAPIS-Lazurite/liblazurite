@@ -461,24 +461,26 @@ namespace lazurite
 	{
 		int result;
 		int errcode=-1;
-		union {
-			uint8_t a8[8];
-			uint16_t a16[4];
-		} uaddr;
+		uint16_t a16[4];
 
 		if(!dst_be) return errcode;
-		for(int i=0;i<8;i++) {
-			uaddr.a8[7-i] = dst_be[i];
-		}
+		a16[3] = dst_be[0];
+		a16[3] = (a16[3] << 8) + dst_be[1];
+		a16[2] = dst_be[2];
+		a16[2] = (a16[2] << 8) + dst_be[3];
+		a16[1] = dst_be[4];
+		a16[1] = (a16[1] << 8) + dst_be[5];
+		a16[0] = dst_be[6];
+		a16[0] = (a16[0] << 8) + dst_be[7];
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,uaddr.a16[0]), errcode--;
-		if(result != uaddr.a16[0]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR1,uaddr.a16[1]), errcode--;
-		if(result != uaddr.a16[1]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR2,uaddr.a16[2]), errcode--;
-		if(result != uaddr.a16[2]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR3,uaddr.a16[3]), errcode--;
-		if(result != uaddr.a16[3]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,a16[0]), errcode--;
+		if(result != a16[0]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR1,a16[1]), errcode--;
+		if(result != a16[1]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR2,a16[2]), errcode--;
+		if(result != a16[2]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR3,a16[3]), errcode--;
+		if(result != a16[3]) return errcode;
 
 		result = write(fp,payload,length);
 		if(result < 0) result = errno*-1;
@@ -487,37 +489,35 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief send data
-	  @param[in]     rxpanid	panid of receiver
-	  @param[in]     dst_le     8x8bit address pointer for 64bit MAC address(big endian)<br>
-	  rxpanid & txaddr = 0xffff = broadcast <br>
-	  others = unicast <br>
-	  @param[in]     payload start poiter of data to be sent
-	  @param[in]     length length of payload
-	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
-	  @exception none
+		@param[in]     rxpanid	panid of receiver
+		@param[in]     dst_le     8x8bit address pointer for 64bit MAC address(big endian)<br>
+		rxpanid & txaddr = 0xffff = broadcast <br>
+		others = unicast <br>
+		@param[in]     payload start poiter of data to be sent
+		@param[in]     length length of payload
+		@return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_send64le(uint8_t *dst_le,const void* payload, uint16_t length)
 	{
 		int result;
 		int errcode=-1;
-		union {
-			uint8_t a8[8];
-			uint16_t a16[4];
-		} uaddr;
+		uint16_t a16[4];
 
 		if(!dst_le) return errcode;
-		for(int i=0;i<7;i++) {
-			uaddr.a8[i] = dst_le[i];
+		for(int i=0;i<4;i++) {
+			a16[i] = dst_le[i*2+1];
+			a16[i] = (a16[i] << 8) + dst_le[i*2];
 		}
 
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,uaddr.a16[0]), errcode--;
-		if(result != uaddr.a16[0]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR1,uaddr.a16[1]), errcode--;
-		if(result != uaddr.a16[1]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR2,uaddr.a16[2]), errcode--;
-		if(result != uaddr.a16[2]) return errcode;
-		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR3,uaddr.a16[3]), errcode--;
-		if(result != uaddr.a16[3]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR0,a16[0]), errcode--;
+		if(result != a16[0]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR1,a16[1]), errcode--;
+		if(result != a16[1]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR2,a16[2]), errcode--;
+		if(result != a16[2]) return errcode;
+		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_DST_ADDR3,a16[3]), errcode--;
+		if(result != a16[3]) return errcode;
 
 		result = write(fp,payload,length);
 		if(result < 0) result = errno*-1;
@@ -526,14 +526,14 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief send data
-	  @param[in]     rxpanid	panid of receiver
-	  @param[in]     txaddr     16bit short address of receiver<br>
-	  rxpanid & txaddr = 0xffff = broadcast <br>
-	  others = unicast <br>
-	  @param[in]     payload start poiter of data to be sent
-	  @param[in]     length length of payload
-	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
-	  @exception none
+		@param[in]     rxpanid	panid of receiver
+		@param[in]     txaddr     16bit short address of receiver<br>
+		rxpanid & txaddr = 0xffff = broadcast <br>
+		others = unicast <br>
+		@param[in]     payload start poiter of data to be sent
+		@param[in]     length length of payload
+		@return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_send(uint16_t rxpanid,uint16_t rxaddr,const void* payload, uint16_t length)
 	{
@@ -553,9 +553,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief enable RX
-	  @param     none
-	  @return         0=success <br> 0 < fail
-	  @exception none
+		@param     none
+		@return         0=success <br> 0 < fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_rxEnable(void)
 	{
@@ -570,9 +570,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief disable RX
-	  @param     none
-	  @return         0=success <br> 0 < fail
-	  @exception none
+		@param     none
+		@return         0=success <br> 0 < fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_rxDisable(void)
 	{
@@ -587,9 +587,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get my address
-	  @param[out]     short pointer to return my address
-	  @return         0=success <br> 0 < fail
-	  @exception none
+		@param[out]     short pointer to return my address
+		@return         0=success <br> 0 < fail
+		@exception none
 	 ******************************************************************************/
 
 	extern "C" int lazurite_getMyAddr64(uint8_t *addr)
@@ -628,9 +628,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get my address
-	  @param[out]     short pointer to return my address
-	  @return         0=success <br> 0 < fail
-	  @exception none
+		@param[out]     short pointer to return my address
+		@return         0=success <br> 0 < fail
+		@exception none
 	 ******************************************************************************/
 
 	extern "C" long lazurite_getMyAddress(void)
@@ -647,8 +647,8 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set my short address
-	  @param[in]      my_addr(0x0000-0xfffe) last 2byte of 64bit MAC address is in default.
-	  @param[out]     0: OK, -1:error (my_addr == 0xFFFF) 0xFFFF is reserved for broadcast
+		@param[in]      my_addr(0x0000-0xfffe) last 2byte of 64bit MAC address is in default.
+		@param[out]     0: OK, -1:error (my_addr == 0xFFFF) 0xFFFF is reserved for broadcast
 	 ******************************************************************************/
 	extern "C" int lazurite_setMyAddress(uint16_t my_addr)
 	{
@@ -661,10 +661,10 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief send data via 920MHz
-	  @param[in]     *payload     data 
-	  @param[in]      size        data of length
-	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
-	  @exception      none
+		@param[in]     *payload     data 
+		@param[in]      size        data of length
+		@return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_write(const char* payload, uint16_t size)
 	{
@@ -675,11 +675,11 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief decoding mac header for external function
-	  @param[out]     *mac    result of decoding raw
-	  @param[in]      *raw    raw data of ieee802154
-	  @param[in]      raw_len length of raw
-	  @return         length of raw data
-	  @exception      none
+		@param[out]     *mac    result of decoding raw
+		@param[in]      *raw    raw data of ieee802154
+		@param[in]      raw_len length of raw
+		@return         length of raw data
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_decMac(SUBGHZ_MAC* mac,void* raw,uint16_t raw_size){
 		int result;
@@ -712,9 +712,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get size of receiving data
-	  @param      none
-	  @return     length of receiving packet
-	  @exception  none
+		@param      none
+		@return     length of receiving packet
+		@exception  none
 	 ******************************************************************************/
 	extern "C" int lazurite_available(void)
 	{
@@ -727,13 +727,13 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief read raw data
-	  @param[out]     *raw
-	  pointer to write received packet data.<br>
-	  255 byte should be reserved.
-	  @param[out]     size
-	  size of raw data
-	  @return     length of receiving packet
-	  @exception  none
+		@param[out]     *raw
+		pointer to write received packet data.<br>
+		255 byte should be reserved.
+		@param[out]     size
+		size of raw data
+		@return     length of receiving packet
+		@exception  none
 	 ******************************************************************************/
 	extern "C" int lazurite_read(void* raw, uint16_t* size){
 		int result;
@@ -752,12 +752,12 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief read only payload. header is abandoned.
-	  @param[out]     *payload    memory for payload to be written. need to reserve 250 byte in maximum.
-	  @param[out]     *size       size of payload
-	  @return         size of payload
-	  @exception      none
-	  @note           about lazurite_readPayload:
-	  mac header is abandoned.
+		@param[out]     *payload    memory for payload to be written. need to reserve 250 byte in maximum.
+		@param[out]     *size       size of payload
+		@return         size of payload
+		@exception      none
+		@note           about lazurite_readPayload:
+		mac header is abandoned.
 	 ******************************************************************************/
 	extern "C" int lazurite_readPayload(char* payload, uint16_t* size)
 	{
@@ -778,14 +778,14 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief read payload from linked address
-	  @param[out]     *payload   pointer of payload
-	  @param[out]     *size       length of payload
-	  @return         size
-	  @exception      none
-	  @note  About linkedAddress mode:
-	  The size is length of receiving packet in kernel driver.
-	  When tx address is wrong in linked address mode, lazurite_readPayload or lazurite_read return 0.
-	  mac header is abandoned in this mode.
+		@param[out]     *payload   pointer of payload
+		@param[out]     *size       length of payload
+		@return         size
+		@exception      none
+		@note  About linkedAddress mode:
+		The size is length of receiving packet in kernel driver.
+		When tx address is wrong in linked address mode, lazurite_readPayload or lazurite_read return 0.
+		mac header is abandoned in this mode.
 	 ******************************************************************************/
 	extern "C" int lazurite_readLink(char* payload, uint16_t* size)
 	{
@@ -819,10 +819,10 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief get Receiving time
-	  @param[out]     *tv_sec     32bit linux time data
-	  @param[out]     *tv_nsec    32bit nsec time
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[out]     *tv_sec     32bit linux time data
+		@param[out]     *tv_nsec    32bit nsec time
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getRxTime(time_t* tv_sec,long* tv_nsec)
 	{
@@ -854,9 +854,9 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief get RSSI of last receiving packet
-	  @param[out]     *rssi   value of RSSI.  0-255. 255 is in maxim
-	  @return         0 > rssi <br> 0 < fail
-	  @exception      none
+		@param[out]     *rssi   value of RSSI.  0-255. 255 is in maxim
+		@return         0 > rssi <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getRxRssi(void)
 	{
@@ -869,10 +869,10 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief get RSSI of ack in last tx packet
-	  @param[out]     *rssi   value of RSSI.  0-255. 255 is in maxim
-	  @return         Success=0, Fail<0
-	  @return         0 > rssi <br> 0 < fail
-	  @exception      none
+		@param[out]     *rssi   value of RSSI.  0-255. 255 is in maxim
+		@return         Success=0, Fail<0
+		@return         0 > rssi <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getTxRssi(void)
 	{
@@ -885,19 +885,19 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get address type
-	  @param[in]     none 
-	  @return         address type
-	  type | rx_addr | src_addr | panid_comp | rx panid | src_panid
-	  -----| --------| --------| ---------- | -------- | --------
-	  0 | N | N | 0 | N | N
-	  1 | N | N | 1 | Y | N
-	  2 | N | Y | 0 | N | Y
-	  3 | N | Y | 1 | N | N
-	  4 | Y | N | 0 | Y | N
-	  5 | Y | N | 1 | N | N
-	  6 | Y | Y | 0 | Y | N
-	  7 | Y | Y | 1 | N | N
-	  @exception      none
+		@param[in]     none 
+		@return         address type
+		type | rx_addr | src_addr | panid_comp | rx panid | src_panid
+		-----| --------| --------| ---------- | -------- | --------
+		0 | N | N | 0 | N | N
+		1 | N | N | 1 | Y | N
+		2 | N | Y | 0 | N | Y
+		3 | N | Y | 1 | N | N
+		4 | Y | N | 0 | Y | N
+		5 | Y | N | 1 | N | N
+		6 | Y | Y | 0 | Y | N
+		7 | Y | Y | 1 | N | N
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getAddrType(void)
 	{
@@ -915,9 +915,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set address type
-	  @param[in]      mac address type to send
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[in]      mac address type to send
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setAddrType(uint8_t addr_type)
 	{
@@ -938,9 +938,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get CCA cycle Time
-	  @param[in]     none 
-	  @return         0 > senseTime <br> 0 < fail
-	  @exception      none
+		@param[in]     none 
+		@return         0 > senseTime <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getSenseTime(void)
 	{
@@ -958,9 +958,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set cycle of CCA
-	  @param[in]      CCA cycle 0-255(20 in default)
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[in]      CCA cycle 0-255(20 in default)
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setSenseTime(uint8_t senseTime)
 	{
@@ -981,9 +981,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get cycle time to resend, when tx is failed.
-	  @param[in]      none
-	  @return         0 > txretry <br> 0 < fail
-	  @exception      none
+		@param[in]      none
+		@return         0 > txretry <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getTxRetry(void)
 	{
@@ -1001,9 +1001,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set cycle to resend, when Tx is failed.
-	  @param[in]      retry cycle 0-255(3 in default)
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[in]      retry cycle 0-255(3 in default)
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setTxRetry(uint8_t retry)
 	{
@@ -1024,9 +1024,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set tx interval until resend, when Tx is failed.
-	  @param[in]      none
-	  @return         txinterval(ms) >0 <br> 0 < fail
-	  @exception      none
+		@param[in]      none
+		@return         txinterval(ms) >0 <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getTxInterval(void)
 	{
@@ -1044,9 +1044,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set interval to resend, when tx is failed.
-	  @param[in]      txinterval 0(0ms) - 500(500ms), 500 in default
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[in]      txinterval 0(0ms) - 500(500ms), 500 in default
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setTxInterval(uint16_t txinterval)
 	{
@@ -1067,10 +1067,10 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get backoff time
-	  @param[in]      none
-	  @return         0 > backoff time <br> 0 < fail <br>
-	  backoff time = 320us * 2^cca_wait
-	  @exception      none
+		@param[in]      none
+		@return         0 > backoff time <br> 0 < fail <br>
+		backoff time = 320us * 2^cca_wait
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getCcaWait(void)
 	{
@@ -1088,10 +1088,10 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set cca backoff time
-	  @param[in]      ccawait (0 - 7), 7 in default <br>
-	  backoff time = 320us * 2^cca_wait
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[in]      ccawait (0 - 7), 7 in default <br>
+		backoff time = 320us * 2^cca_wait
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setCcaWait(uint8_t ccawait)
 	{
@@ -1112,8 +1112,8 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set promiscuous mode
-	  @param[in]     true : promiscuous mode, false: normal mode
-	  @exception      none
+		@param[in]     true : promiscuous mode, false: normal mode
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setPromiscuous(bool on)
 	{
@@ -1126,8 +1126,8 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set ack request
-	  @param[in]     true : ack requested, false: force to set non-ack
-	  @exception      none
+		@param[in]     true : ack requested, false: force to set non-ack
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setAckReq(bool on)
 	{
@@ -1139,8 +1139,8 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief set broadcast
-	  @param[in]     true : enable to receive broadcast, false: ignore to receive broadcast
-	  @exception      none
+		@param[in]     true : enable to receive broadcast, false: ignore to receive broadcast
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setBroadcastEnb(bool on)
 	{
@@ -1152,8 +1152,8 @@ namespace lazurite
 	}
 	/******************************************************************************/
 	/*! @brief set AES Key 
-	  @param[in]     set pointer of 128bit AES key
-	  @exception      none
+		@param[in]     set pointer of 128bit AES key
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setKey(char *key)
 	{
@@ -1166,9 +1166,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set enhance ACK
-	  @param[in]     set pointer of enhance ACK data
-	  @param[in]     set size of enhance ACK data
-	  @exception      none
+		@param[in]     set pointer of enhance ACK data
+		@param[in]     set size of enhance ACK data
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setEnhanceAck(uint8_t *data, uint16_t size)
 	{
@@ -1187,9 +1187,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief get enhance ACK
-	  @param[out]     set pointer's pointer of enhance ACK data
-	  @param[out]     set pointer of enhance ACK size
-	  @exception      none
+		@param[out]     set pointer's pointer of enhance ACK data
+		@param[out]     set pointer of enhance ACK size
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_getEnhanceAck(char* data, uint16_t* size)
 	{
