@@ -68,7 +68,7 @@
 namespace lazurite
 {
 #endif
-	static int fp;  /*< file descripter fo IOCTL */
+	static int fp = 0;  /*< file descripter fo IOCTL */
 	/*! @brief 
 	  linkedAddr=0xffff:  receive from all device<br>
 	  linkedAddr!=0xffff: receive from specific device<br>
@@ -305,28 +305,30 @@ namespace lazurite
 	 ******************************************************************************/
 	extern "C" int lazurite_init(void)
 	{
-		int result;
 		int errcode = 0;
+		int result;
 
 		// open device driver
-		system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko");
+		result = system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko");
 		//system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=0xFFFF");
-		system("sudo chmod 777 /dev/lzgw");
+		if(result == 0) {
+			system("sudo chmod 777 /dev/lzgw");
+		}
 		fp = open("/dev/lzgw",O_RDWR),errcode--;
 		if(fp<0) return -1;
 
 		// initializing paramteters..
 		linkedAddr = 0xffff;
 
-		return 0;
+		return result;
 	}
 
 	/******************************************************************************/
 	/*! @brief initializing LazDriver as test mode
-	  @param      none
-	  @return         0=success <br> 0 < fail
-	  @exception  none
-	  @todo  must be change folder name of lazdriver
+		@param      none
+		@return         0=success <br> 0 < fail
+		@exception  none
+		@todo  must be change folder name of lazdriver
 	 ******************************************************************************/
 	extern "C" int lazurite_test(uint16_t testmode)
 	{
@@ -348,23 +350,24 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief remove driver from kernel
-	  @param     none
-	  @return         0=success <br> 0 < fail
-	  @exception none
+		@param     none
+		@return         0=success <br> 0 < fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_remove(void) 
 	{
+		int result;
 		close(fp);
 		usleep(100000);
-		system("sudo rmmod lazdriver");
-		return 0;
+		result = system("sudo rmmod lazdriver");
+		return result;
 	}
 
 	/******************************************************************************/
 	/*! @brief set rx address to be sent
-	  @param[out]     tmp_rxaddr   rxaddr to be sent
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[out]     tmp_rxaddr   rxaddr to be sent
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setRxAddr(uint16_t tmp_rxaddr)
 	{
@@ -378,9 +381,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief set PANID for TX
-	  @param[out]     txpanid    set PANID(Personal Area Network ID) for sending
-	  @return         0=success <br> 0 < fail
-	  @exception      none
+		@param[out]     txpanid    set PANID(Personal Area Network ID) for sending
+		@return         0=success <br> 0 < fail
+		@exception      none
 	 ******************************************************************************/
 	extern "C" int lazurite_setTxPanid(uint16_t txpanid)
 	{
@@ -392,19 +395,19 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief setup lazurite module
-	  @param[in]  ch (RF frequency)<br>
-	  in case of 100kbps, ch is 24-31, 33-60<br>
-	  in case of 50kbps, ch is 24-61
-	  @param[in]  mypanid
-	  set my PANID.
-	  @param[in] rate 50 or 100<br>
-	  100 = 100kbps<br>
-	  50  = 50kbps 
-	  @param[in] pwr 1 or 20<br>
-	  1  = 1mW<br>
-	  20 = 20mW
-	  @return         0=success <br> 0 < fail
-	  @exception  none
+		@param[in]  ch (RF frequency)<br>
+		in case of 100kbps, ch is 24-31, 33-60<br>
+		in case of 50kbps, ch is 24-61
+		@param[in]  mypanid
+		set my PANID.
+		@param[in] rate 50 or 100<br>
+		100 = 100kbps<br>
+		50  = 50kbps 
+		@param[in] pwr 1 or 20<br>
+		1  = 1mW<br>
+		20 = 20mW
+		@return         0=success <br> 0 < fail
+		@exception  none
 	 ******************************************************************************/
 	extern "C" int lazurite_begin(uint8_t ch, uint16_t mypanid, uint8_t rate,uint8_t pwr)
 	{
@@ -431,9 +434,9 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief close driver (stop RF)
-	  @param     none
-	  @return         0=success <br> 0 < fail
-	  @exception none
+		@param     none
+		@return         0=success <br> 0 < fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_close(void)
 	{
@@ -448,14 +451,14 @@ namespace lazurite
 
 	/******************************************************************************/
 	/*! @brief send data
-	  @param[in]     rxpanid	panid of receiver
-	  @param[in]     dst_be     8x8bit address pointer for 64bit MAC address(big endian)<br>
-	  rxpanid & txaddr = 0xffff = broadcast <br>
-	  others = unicast <br>
-	  @param[in]     payload start poiter of data to be sent
-	  @param[in]     length length of payload
-	  @return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
-	  @exception none
+		@param[in]     rxpanid	panid of receiver
+		@param[in]     dst_be     8x8bit address pointer for 64bit MAC address(big endian)<br>
+		rxpanid & txaddr = 0xffff = broadcast <br>
+		others = unicast <br>
+		@param[in]     payload start poiter of data to be sent
+		@param[in]     length length of payload
+		@return         0=success=0 <br> -ENODEV = ACK Fail <br> -EBUSY = CCA Fail
+		@exception none
 	 ******************************************************************************/
 	extern "C" int lazurite_send64be(uint8_t *dst_be,const void* payload, uint16_t length)
 	{
