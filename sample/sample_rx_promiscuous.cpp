@@ -61,8 +61,11 @@ int main(int argc, char **argv)
 
 	timespec rxTime;
 
-	if((result=lazurite_init())!=0) {
-		printf("liblzgw_open fail = %d\n",result);
+	result = lazurite_init();
+	if(result == 256) {
+		printf("lazdriver.ko is already existed\n");
+	} else if(result < 0) {
+		fprintf(stderr,"fail to load lazdriver.ko(%d)\n",result);
 		return EXIT_FAILURE;
 	}
 

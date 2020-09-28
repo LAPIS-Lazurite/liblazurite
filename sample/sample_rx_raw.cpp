@@ -1,20 +1,20 @@
 /*!
-  @file test_rx.cpp
-  @brief about test_raw <br>
-  sample code to read raw data that is received.
+	@file test_rx.cpp
+	@brief about test_raw <br>
+	sample code to read raw data that is received.
 
-  @subsection how to use <br>
+	@subsection how to use <br>
 
-  paramete can be ommited.
-  
-  (ex)
-  @code
-  test_raw 36 0xabcd 100 20
-  test_raw 36 0xabcd
-  @endcode
+	paramete can be ommited.
 
-  when push Ctrl+C, process is quited.
-  */
+	(ex)
+	@code
+	test_raw 36 0xabcd 100 20
+	test_raw 36 0xabcd
+	@endcode
+
+	when push Ctrl+C, process is quited.
+	*/
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,9 +28,9 @@ using namespace lazurite;
 bool bStop;
 
 /*!
-  signal handler <br>
-  this process is executed, when Ctrl+C is pushed.
-  */
+	signal handler <br>
+	this process is executed, when Ctrl+C is pushed.
+	*/
 void sigHandle(int sigName)
 {
 	bStop = true;
@@ -38,8 +38,8 @@ void sigHandle(int sigName)
 	return;
 }
 /*!
-  set signal handler for Ctrl+C
-  */
+	set signal handler for Ctrl+C
+	*/
 
 int setSignal(int sigName)
 {
@@ -61,8 +61,11 @@ int main(int argc, char **argv)
 
 	timespec rxTime;
 
-	if((result=lazurite_init())!=0) {
-		printf("liblzgw_open fail = %d\n",result);
+	result = lazurite_init();
+	if(result == 256) {
+		printf("lazdriver.ko is already existed\n");
+	} else if(result < 0) {
+		fprintf(stderr,"fail to load lazdriver.ko(%d)\n",result);
 		return EXIT_FAILURE;
 	}
 
@@ -83,15 +86,15 @@ int main(int argc, char **argv)
 	printf("short address:: %04x\n",lazurite_getMyAddress());
 	result = lazurite_getMyAddr64(myaddr_be);
 	printf("mac address::   %02x%02x%02x%02x %02x%02x%02x%02x\n",
-		myaddr_be[0],
-		myaddr_be[1],
-		myaddr_be[2],
-		myaddr_be[3],
-		myaddr_be[4],
-		myaddr_be[5],
-		myaddr_be[6],
-		myaddr_be[7]
-	);
+			myaddr_be[0],
+			myaddr_be[1],
+			myaddr_be[2],
+			myaddr_be[3],
+			myaddr_be[4],
+			myaddr_be[5],
+			myaddr_be[6],
+			myaddr_be[7]
+			);
 
 	result = lazurite_begin(ch,panid,rate,pwr);
 	if(result < 0) {
@@ -115,26 +118,26 @@ int main(int argc, char **argv)
 		if(result > 0 ) {
 			result = lazurite_decMac(&mac,raw,size);
 			printf("%02x\t%04x\t%02x%02x%02x%02x%02x%02x%02x%02x\t%04x\t%02x%02x%02x%02x%02x%02x%02x%02x\t",
-				mac.seq_num,
-				mac.dst_panid,
-				mac.dst_addr[7],
-				mac.dst_addr[6],
-				mac.dst_addr[5],
-				mac.dst_addr[4],
-				mac.dst_addr[3],
-				mac.dst_addr[2],
-				mac.dst_addr[1],
-				mac.dst_addr[0],
-				mac.dst_panid,
-				mac.src_addr[7],
-				mac.src_addr[6],
-				mac.src_addr[5],
-				mac.src_addr[4],
-				mac.src_addr[3],
-				mac.src_addr[2],
-				mac.src_addr[1],
-				mac.src_addr[0]
-				);
+					mac.seq_num,
+					mac.dst_panid,
+					mac.dst_addr[7],
+					mac.dst_addr[6],
+					mac.dst_addr[5],
+					mac.dst_addr[4],
+					mac.dst_addr[3],
+					mac.dst_addr[2],
+					mac.dst_addr[1],
+					mac.dst_addr[0],
+					mac.dst_panid,
+					mac.src_addr[7],
+					mac.src_addr[6],
+					mac.src_addr[5],
+					mac.src_addr[4],
+					mac.src_addr[3],
+					mac.src_addr[2],
+					mac.src_addr[1],
+					mac.src_addr[0]
+					);
 			printf("%s\n", raw+mac.payload_offset);
 		}
 		usleep(100000);

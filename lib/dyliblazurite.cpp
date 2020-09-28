@@ -299,7 +299,7 @@ namespace lazurite
 	/******************************************************************************/
 	/*! @brief load LazDriver
 	  @param      none
-	  @return         0=success <br> 0 < fail
+	  @return         0=success <br> 0 < fail <br> 256= driver is existed in kernel
 	  @exception  none
 	  @todo  must be change folder name of lazdriver
 	 ******************************************************************************/
@@ -311,9 +311,7 @@ namespace lazurite
 		// open device driver
 		result = system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko");
 		//system("sudo insmod /home/pi/driver/LazDriver/lazdriver.ko module_test=0xFFFF");
-		if(result == 0) {
-			system("sudo chmod 777 /dev/lzgw");
-		}
+		system("sudo chmod 777 /dev/lzgw");
 		fp = open("/dev/lzgw",O_RDWR),errcode--;
 		if(fp<0) return -1;
 
@@ -415,19 +413,34 @@ namespace lazurite
 		int errcode = 0;
 
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_CH,ch), errcode--;
-		if(result != ch) return errcode;
+		if(result != ch) {
+			fprintf(stderr,"%s(%d) %s(%d,%04x,%d,%d)¥n",__FILE__,__LINE__,__func__,ch,mypanid,rate,pwr);
+			return errcode;
+		}
 
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_MY_PANID,mypanid), errcode--;
-		if(result != mypanid) return errcode;
+		if(result != mypanid) {
+			fprintf(stderr,"%s(%d) %s(%d,%04x,%d,%d)¥n",__FILE__,__LINE__,__func__,ch,mypanid,rate,pwr);
+			return errcode;
+		}
 
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_BPS,rate), errcode--;
-		if(result != rate) return errcode;
+		if(result != rate) {
+			fprintf(stderr,"%s(%d) %s(%d,%04x,%d,%d)¥n",__FILE__,__LINE__,__func__,ch,mypanid,rate,pwr);
+			return errcode;
+		}
 
 		result = ioctl(fp,IOCTL_PARAM | IOCTL_SET_PWR,pwr), errcode--;
-		if(result != pwr) return errcode;
+		if(result != pwr) {
+			fprintf(stderr,"%s(%d) %s(%d,%04x,%d,%d)¥n",__FILE__,__LINE__,__func__,ch,mypanid,rate,pwr);
+			return errcode;
+		}
 
 		result = ioctl(fp,IOCTL_CMD | IOCTL_SET_BEGIN,0), errcode--;
-		if(result != 0) return errcode;
+		if(result != 0) {
+			fprintf(stderr,"%s(%d) %s(%d,%04x,%d,%d)¥n",__FILE__,__LINE__,__func__,ch,mypanid,rate,pwr);
+			return errcode;
+		}
 
 		return 0;
 	}
